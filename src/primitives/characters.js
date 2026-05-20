@@ -275,14 +275,16 @@ export function characters(opts = {}) {
               .attr('stroke', '#fff').attr('stroke-width', 3).attr('paint-order', 'stroke')
               .text(label);
           } else {
-            // Vertical lanes: x is constant per lane. Pin label above the first tick.
-            const { x }   = evPositions[anyEi];
-            const topY    = sceneY(0) - r - 10;
-            const vMax    = Math.max(3, Math.floor(laneSpacing / 7));
-            const vLabel  = name.length > vMax ? name.slice(0, vMax - 1) + '…' : name;
+            // Vertical lanes: rotate -90° above the first tick so labels read as column headers.
+            const { x }    = evPositions[anyEi];
+            const anchorY  = sceneY(0) - r - 6;
+            const avail    = anchorY - ((padding?.top) ?? 0);
+            const vMax     = Math.max(3, Math.floor(avail / 7));
+            const vLabel   = name.length > vMax ? name.slice(0, vMax - 1) + '…' : name;
             lblLayer.append('text')
-              .attr('x', x).attr('y', topY)
-              .attr('text-anchor', 'middle')
+              .attr('transform', `translate(${x},${anchorY}) rotate(-90)`)
+              .attr('text-anchor', 'start')
+              .attr('dominant-baseline', 'middle')
               .attr('font-size', '10px').attr('font-weight', '700')
               .attr('fill', '#374151')
               .attr('stroke', '#fff').attr('stroke-width', 3).attr('paint-order', 'stroke')
