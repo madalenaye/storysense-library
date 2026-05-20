@@ -187,7 +187,7 @@ const STORIES = [
 
 // ── State ─────────────────────────────────────────────────────────────────────
 let currentStory       = null;
-let currentCustomStory = null;  // retained so the custom dropdown entry stays usable
+let currentCustomStory = null;
 let currentView        = 'storyline';
 let currentApi         = null;  // track last chart instance to destroy its ResizeObserver
 
@@ -271,8 +271,7 @@ function loadJSON(file) {
       const raw = JSON.parse(e.target.result);
       currentCustomStory = currentStory = normalizeNarrative(raw);
       document.getElementById('story-title').textContent = currentStory.title ?? file.name;
-      // Mark select as "custom" so it doesn't mislead
-      const sel = document.getElementById('story-select');
+      // Add/update the custom option in the dropdown
       let custom = sel.querySelector('option[value="__custom__"]');
       if (!custom) {
         custom = document.createElement('option');
@@ -301,12 +300,13 @@ STORIES.forEach((s, i) => {
 });
 
 sel.addEventListener('change', () => {
-  const idx = sel.value;
-  if (idx === '__custom__') {
-    if (currentCustomStory) { currentStory = currentCustomStory; render(); }
+  if (sel.value === '__custom__') {
+    currentStory = currentCustomStory;
+    document.getElementById('story-title').textContent = currentCustomStory.title ?? '';
+    render();
     return;
   }
-  const s = STORIES[+idx];
+  const s = STORIES[+sel.value];
   if (s) loadBuiltIn(s.file, s.label);
 });
 
