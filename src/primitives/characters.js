@@ -275,14 +275,18 @@ export function characters(opts = {}) {
               .attr('stroke', '#fff').attr('stroke-width', 3).attr('paint-order', 'stroke')
               .text(label);
           } else {
-            const { x } = evPositions[anyEi];
+            // Vertical lanes: x is constant per lane. Pin label above the first tick.
+            const { x }   = evPositions[anyEi];
+            const topY    = sceneY(0) - r - 10;
+            const vMax    = Math.max(3, Math.floor(laneSpacing / 7));
+            const vLabel  = name.length > vMax ? name.slice(0, vMax - 1) + '…' : name;
             lblLayer.append('text')
-              .attr('x', x + r + 6).attr('y', y + 4)
-              .attr('text-anchor', 'start')
-              .attr('font-size', '11px').attr('font-weight', '700')
+              .attr('x', x).attr('y', topY)
+              .attr('text-anchor', 'middle')
+              .attr('font-size', '10px').attr('font-weight', '700')
               .attr('fill', '#374151')
               .attr('stroke', '#fff').attr('stroke-width', 3).attr('paint-order', 'stroke')
-              .text(label);
+              .text(vLabel);
           }
         });
       }

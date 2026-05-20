@@ -164,6 +164,7 @@
   <button class="tab" data-view="interactions">Interactions</button>
   <button class="tab" data-view="network">Character Network</button>
   <button class="tab" data-view="locations">Location Flow</button>
+  <button class="tab" data-view="vertical">Vertical</button>
 </div>
 
 <div id="chart"></div>
@@ -237,6 +238,15 @@ function render() {
           .add(tooltip())
           .add(locations({ r: 30, labels: true }))
           .add(movement({ arrow: true }))
+          .render(),
+
+      vertical: () =>
+        storysense('#chart', currentStory, { ...base, aspectRatio: 460 / 860, axisRatio: 0.28 })
+          .add(tooltip())
+          .add(timeline({ direction: 'y', stroke: '#e5e7eb', tickRadius: 3 }))
+          .add(characters({ layout: 'lane', side: 'below', r: 14, laneSpacing: 36, labels: true }))
+          .add(lifelines({ strokeWidth: 3, opacity: 0.75 }))
+          .add(events({ shape: 'dot', r: 5, fill: '#e5e7eb' }))
           .render(),
     };
 

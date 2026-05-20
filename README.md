@@ -7,10 +7,11 @@ Compose narrative visualizations from small, focused pieces. No framework or bui
 **From CDN** (no download needed, requires an internet connection):
 
 ```js
-import SS from 'https://cdn.jsdelivr.net/gh/madalenaye/storysense-library@latest/src/index.js';
+import SS from 'https://cdn.jsdelivr.net/gh/madalenaye/storysense-library@main/src/index.js';
 ```
 
-**Local** (download or clone the repo, then reference the folder):
+
+**Local** (clone the repo, then reference the folder):
 
 ```js
 import SS from './storysense-library/src/index.js';
@@ -20,7 +21,7 @@ Named imports work with both:
 
 ```js
 import { storysense, normalizeNarrative, tooltip, timeline }
-  from 'https://cdn.jsdelivr.net/gh/madalenaye/storysense-library@latest/src/index.js';
+  from 'https://cdn.jsdelivr.net/gh/madalenaye/storysense-library@main/src/index.js';
 ```
 
 D3 loads automatically from CDN either way.

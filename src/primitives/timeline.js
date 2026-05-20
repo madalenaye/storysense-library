@@ -84,7 +84,7 @@ export function timeline(opts = {}) {
       } else {
         const y0    = padding.top    + margin;
         const y1    = height - padding.bottom - margin;
-        const axisX = width  * (1 - axisRatio);
+        const axisX = width  * axisRatio;
         const scale = d3.scaleLinear().domain([0, Math.max(n - 1, 1)]).range([y0, y1]);
 
         ctx.set('sceneX',    () => axisX);
