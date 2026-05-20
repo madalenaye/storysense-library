@@ -76,12 +76,38 @@ export function characters(opts = {}) {
       let forceSim      = null;
       let tickListeners = null;
 
+      // ── Auto-fit lane spacing so all participants stay within the SVG bounds ─
+      let effectiveSpacing = laneSpacing;
+      if (layout === 'lane' && data.participants.length > 1) {
+        const nSide = side === 'both'
+          ? Math.ceil(data.participants.length / 2)
+          : data.participants.length;
+        const { width: W, height: H, padding: pad } = ctx.opts;
+        let avail;
+        if (direction === 'x') {
+          const axisY = sceneY(0);
+          avail = side === 'below'
+            ? (H - (pad?.bottom ?? 0)) - axisY
+            : axisY - (pad?.top ?? 0);
+        } else {
+          const axisX = sceneX(0);
+          avail = side === 'above'
+            ? axisX - (pad?.left ?? 0)
+            : (W - (pad?.right ?? 0)) - axisX;
+        }
+        // Outermost node centre must stay r px from the boundary:
+        // r*2 + spacing/2 + (nSide-1)*spacing + r <= avail
+        // spacing * (nSide - 0.5) <= avail - r*3
+        const maxSpacing = (avail - r * 3) / Math.max(nSide - 0.5, 1);
+        effectiveSpacing = Math.min(laneSpacing, Math.max(r * 1.5, maxSpacing));
+      }
+
       // ── Lane layout ─────────────────────────────────────────────────────────
       if (layout === 'lane') {
         data.participants.forEach((participant, idx) => {
           const sign    = side === 'below' ? 1 : side === 'both' ? (idx % 2 === 0 ? -1 : 1) : -1;
           const laneNum = side === 'both' ? Math.floor(idx / 2) : idx;
-          const offset  = sign * (r * 2 + laneSpacing / 2 + laneNum * laneSpacing);
+          const offset  = sign * (r * 2 + effectiveSpacing / 2 + laneNum * effectiveSpacing);
 
           data.events.forEach((_, ei) => {
             const x = direction === 'x' ? sceneX(ei) : sceneX(ei) + offset;
@@ -241,32 +267,24 @@ export function characters(opts = {}) {
         forceSim.restart();
       }
 
-      // ── Name labels (lane mode only) ──────────────────────────────────────────
+      // ── Name labels (lane mode) ───────────────────────────────────────────────
       if (labels && layout === 'lane') {
-        const lblLayer  = ctx.get('layer')('labels');
+        const lblLayer    = ctx.get('layer')('labels');
         const { padding } = ctx.opts;
 
-        // All labels share a single consistent x — just left of the first tick.
-        // Using sceneX(0) means labels never drift into the chart body regardless
-        // of which event a participant first appears in.
-        const labelX = sceneX(0) - r - 8;
+        if (direction === 'x') {
+          // Horizontal: labels to the left of the first tick, vertically centred on each lane.
+          const labelX   = sceneX(0) - r - 8;
+          const availW   = labelX - ((padding?.left) ?? 0) - 4;
+          const maxChars = Math.max(3, Math.floor(availW / 7));
 
-        // Available px between the left padding edge and the label anchor.
-        // Rough per-char width at 11px bold ≈ 7px.  Truncate names that exceed it.
-        const availW   = labelX - ((padding?.left) ?? 0) - 4;
-        const maxChars = Math.max(3, Math.floor(availW / 7));
-
-        data.participants.forEach(participant => {
-          const evPositions = posMap[participant.id];
-          if (!evPositions) return;
-
-          // In lane mode the participant's y is constant — grab any event's y.
-          const anyEi  = Object.keys(evPositions)[0];
-          const { y }  = evPositions[anyEi];
-          const name   = participant.name;
-          const label  = name.length > maxChars ? name.slice(0, maxChars - 1) + '…' : name;
-
-          if (direction === 'x') {
+          data.participants.forEach(participant => {
+            const evPositions = posMap[participant.id];
+            if (!evPositions) return;
+            const anyEi = Object.keys(evPositions)[0];
+            const { y } = evPositions[anyEi];
+            const name  = participant.name;
+            const label = name.length > maxChars ? name.slice(0, maxChars - 1) + '…' : name;
             lblLayer.append('text')
               .attr('x', labelX).attr('y', y + 4)
               .attr('text-anchor', 'end')
@@ -274,13 +292,20 @@ export function characters(opts = {}) {
               .attr('fill', '#374151')
               .attr('stroke', '#fff').attr('stroke-width', 3).attr('paint-order', 'stroke')
               .text(label);
-          } else {
-            // Vertical lanes: rotate -90° above the first tick so labels read as column headers.
-            const { x }    = evPositions[anyEi];
-            const anchorY  = sceneY(0) - r - 6;
-            const avail    = anchorY - ((padding?.top) ?? 0);
-            const vMax     = Math.max(3, Math.floor(avail / 7));
-            const vLabel   = name.length > vMax ? name.slice(0, vMax - 1) + '…' : name;
+          });
+        } else {
+          // Vertical: rotated column headers above the first tick row.
+          // Anchor is r*2+4 px above the first node centre so text clears the node.
+          data.participants.forEach(participant => {
+            const evPositions = posMap[participant.id];
+            if (!evPositions) return;
+            const anyEi   = Object.keys(evPositions)[0];
+            const { x }   = evPositions[anyEi];
+            const anchorY = sceneY(0) - r * 2 - 4;
+            const avail   = anchorY - ((padding?.top) ?? 0);
+            const vMax    = Math.max(3, Math.floor(avail / 7));
+            const name    = participant.name;
+            const vLabel  = name.length > vMax ? name.slice(0, vMax - 1) + '…' : name;
             lblLayer.append('text')
               .attr('transform', `translate(${x},${anchorY}) rotate(-90)`)
               .attr('text-anchor', 'start')
@@ -289,8 +314,8 @@ export function characters(opts = {}) {
               .attr('fill', '#374151')
               .attr('stroke', '#fff').attr('stroke-width', 3).attr('paint-order', 'stroke')
               .text(vLabel);
-          }
-        });
+          });
+        }
       }
     },
   };
