@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Storysense — Primitives</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f3f4f6;
+      color: #1f2937;
+      padding: 36px 28px 72px;
+    }
+
+    /* ── Page header ────────────────────────────────────────────────────────── */
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+
+    .page-header h1 { font-size: 1.45rem; font-weight: 700; letter-spacing: -0.02em; }
+    .page-header p  { margin-top: 4px; font-size: 0.85rem; color: #6b7280; }
+
+    .header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    .story-label {
+      font-size: 0.75rem; font-weight: 700;
+      color: #6b7280; text-transform: uppercase; letter-spacing: 0.06em;
+    }
+
+    select {
+      padding: 6px 12px;
+      border: 1.5px solid #d1d5db; border-radius: 8px;
+      background: #fff; font-size: 0.875rem; color: #374151;
+      cursor: pointer; outline: none;
+    }
+    select:hover, select:focus { border-color: #172554; }
+
+    .upload-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px;
+      border: 1.5px solid #d1d5db; border-radius: 8px;
+      background: #fff; font-size: 0.875rem; font-weight: 500;
+      color: #374151; cursor: pointer; white-space: nowrap;
+      transition: border-color .15s, color .15s;
+    }
+    .upload-btn:hover { border-color: #172554; color: #172554; }
+
+    /* ── Section title ──────────────────────────────────────────────────────── */
+    .section-title {
+      font-size: 0.68rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.09em;
+      color: #9ca3af; margin-bottom: 12px; margin-top: 32px;
+    }
+    .section-title:first-of-type { margin-top: 0; }
+
+    /* ── Cards ──────────────────────────────────────────────────────────────── */
+    .card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .card-head {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0 20px;
+      align-items: start;
+      padding: 16px 20px 14px;
+      border-bottom: 1px solid #f3f4f6;
+    }
+
+    .prim-badge {
+      font-family: ui-monospace, 'Cascadia Code', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #5b21b6;
+      white-space: nowrap;
+      padding-top: 1px;
+    }
+
+    .prim-subtitle {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #a78bfa;
+      margin-top: 2px;
+    }
+
+    .prim-desc {
+      font-size: 0.83rem;
+      color: #374151;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+
+    .chips { display: flex; flex-wrap: wrap; gap: 4px; }
+
+    .chip {
+      display: inline-block; padding: 2px 9px;
+      border-radius: 999px; font-size: 0.68rem; font-weight: 600;
+    }
+    .chip-needs  { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .chip-gives  { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .chip-dep    { background: #faf5ff; color: #7c3aed; border: 1px solid #e9d5ff; }
+
+    .card-body { padding: 10px; }
+    .card-body > div { width: 100%; }
+
+    /* ── Side-by-side cards ─────────────────────────────────────────────────── */
+    .card-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .card-row .card { margin-bottom: 0; }
+
+    @media (max-width: 700px) {
+      .card-row { grid-template-columns: 1fr; }
+    }
+
+    /* ── Error ──────────────────────────────────────────────────────────────── */
+    .error-banner {
+      display: none;
+      padding: 10px 16px;
+      background: #fef2f2; border: 1px solid #fca5a5;
+      color: #991b1b; border-radius: 8px;
+      font-size: 0.8rem; margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <div>
+    <h1>Primitives</h1>
+    <p>Each primitive shown individually, with the minimum dependencies needed to make it visible.</p>
+  </div>
+  <div class="header-controls">
+    <span class="story-label">Story</span>
+    <select id="story-select"></select>
+    <label class="upload-btn">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+        <path d="M8 1v9M4 5l4-4 4 4M2 12h12v2H2z" stroke="currentColor"
+              stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Load JSON
+      <input type="file" id="file-input" accept=".json" style="display:none" />
+    </label>
+  </div>
+</div>
+
+<div class="error-banner" id="error-banner"></div>
+
+<!-- ════════════════════════════════════════════════════════════════════════════ -->
+<p class="section-title">Axis &amp; Time</p>
+
+<!-- timeline() -->
+<div class="card">
+  <div class="card-head">
+    <div>
+      <div class="prim-badge">timeline()</div>
+    </div>
+    <div class="prim-info">
+      <div class="prim-desc">
+        Draws the time axis, a horizontal or vertical line with one tick per scene.
+        Provides <code>sceneX</code>, <code>sceneY</code>, and <code>direction</code> to every primitive that follows it.
+        Scene labels and date strings are optional.
+      </div>
+      <div class="chips">
+        <span class="chip chip-needs">needs: nothing</span>
+        <span class="chip chip-gives">gives: sceneX · sceneY · direction</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-body"><div id="c-timeline"></div></div>
+</div>
+
+<!-- events() -->
+<div class="card">
+  <div class="card-head">
+    <div>
+      <div class="prim-badge">events()</div>
+    </div>
+    <div class="prim-info">
+      <div class="prim-desc">
+        Places a dot or diamond marker at each scene's position on the axis.
+        Hoverable, shows the scene title in the tooltip.
+        Requires <code>timeline()</code> to have run first.
+      </div>
+      <div class="chips">
+        <span class="chip chip-needs">needs: sceneX · sceneY</span>
+        <span class="chip chip-gives">gives: nothing</span>
+        <span class="chip chip-dep">shown with: timeline</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-body"><div id="c-events"></div></div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════════ -->
+<p class="section-title">Character Layout</p>
+
+<div class="card-row">
+
+  <!-- characters() lane -->
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="prim-badge">characters()</div>
+        <div class="prim-subtitle">layout: 'lane'</div>
+      </div>
+      <div class="prim-info">
+        <div class="prim-desc">
+          Each character gets a fixed parallel track (lifeline lane).
+          Positions are static.
+        </div>
+        <div class="chips">
+          <span class="chip chip-needs">needs: sceneX · sceneY · direction</span>
+          <span class="chip chip-gives">gives: charPos · charRadius</span>
+          <span class="chip chip-dep">shown with: timeline</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body"><div id="c-char-lane"></div></div>
+  </div>
+
+  <!-- characters() force -->
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="prim-badge">characters()</div>
+        <div class="prim-subtitle">layout: 'force'</div>
+      </div>
+      <div class="prim-info">
+        <div class="prim-desc">
+          Characters cluster per-scene using a D3 force simulation. Nodes are draggable.
+          The simulation is pre-settled so the initial layout is stable.
+        </div>
+        <div class="chips">
+          <span class="chip chip-needs">needs: sceneX · sceneY · direction</span>
+          <span class="chip chip-gives">gives: charPos · charRadius</span>
+          <span class="chip chip-dep">shown with: timeline</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body"><div id="c-char-force"></div></div>
+  </div>
+
+</div>
+
+<!-- lifelines() -->
+<div class="card">
+  <div class="card-head">
+    <div>
+      <div class="prim-badge">lifelines()</div>
+    </div>
+    <div class="prim-info">
+      <div class="prim-desc">
+        Connects a character's appearances across scenes with a continuous line.
+        In force mode the lines track node positions live on every simulation tick.
+      </div>
+      <div class="chips">
+        <span class="chip chip-needs">needs: charPos</span>
+        <span class="chip chip-gives">gives: nothing</span>
+        <span class="chip chip-dep">shown with: timeline · characters(lane)</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-body"><div id="c-lifelines"></div></div>
+</div>
+
+<!-- edges() -->
+<div class="card">
+  <div class="card-head">
+    <div>
+      <div class="prim-badge">edges()</div>
+    </div>
+    <div class="prim-info">
+      <div class="prim-desc">
+        Directed lines between characters for each interaction. Multiple interactions between
+        the same pair in the same scene are drawn as parallel offset lines.
+        Arrowheads are optional. Hit area is wider than the visible line for easy hovering.
+      </div>
+      <div class="chips">
+        <span class="chip chip-needs">needs: charPos</span>
+        <span class="chip chip-gives">gives: nothing</span>
+        <span class="chip chip-dep">shown with: timeline · characters(force)</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-body"><div id="c-edges"></div></div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════════ -->
+<p class="section-title">Global Network</p>
+
+<!-- network() -->
+<div class="card">
+  <div class="card-head">
+    <div>
+      <div class="prim-badge">network()</div>
+    </div>
+    <div class="prim-info">
+      <div class="prim-desc">
+        One node per character in a free-form force-directed layout.
+        Aggregates all interactions across all scenes. Fully draggable. Pair with
+        <code>edges()</code> to draw relationship lines.
+      </div>
+      <div class="chips">
+        <span class="chip chip-needs">needs: nothing</span>
+        <span class="chip chip-gives">gives: charPos · charRadius</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-body"><div id="c-network"></div></div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════════════════════ -->
+<p class="section-title">Locations &amp; Movement</p>
+
+<div class="card-row">
+
+  <!-- locations() -->
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="prim-badge">locations()</div>
+      </div>
+      <div class="prim-info">
+        <div class="prim-desc">
+          Circular nodes for each visited location, auto-arranged or manually positioned.
+          A dot tray below each node marks which scenes take place there.
+          Draggable, <code>movement()</code> redraws paths live.
+        </div>
+        <div class="chips">
+          <span class="chip chip-needs">needs: nothing</span>
+          <span class="chip chip-gives">gives: locPos · locDotPos</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body"><div id="c-locations"></div></div>
+  </div>
+
+  <!-- movement() -->
+  <div class="card">
+    <div class="card-head">
+      <div>
+        <div class="prim-badge">movement()</div>
+      </div>
+      <div class="prim-info">
+        <div class="prim-desc">
+          Bezier arcs following scene order between location nodes.
+          A midpoint arrowhead shows travel direction. Paths redraw live when
+          location nodes are dragged.
+        </div>
+        <div class="chips">
+          <span class="chip chip-needs">needs: locPos</span>
+          <span class="chip chip-gives">gives: nothing</span>
+          <span class="chip chip-dep">shown with: locations</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body"><div id="c-movement"></div></div>
+  </div>
+
+</div>
+
+<script type="module">
+import {
+  storysense, normalizeNarrative,
+  tooltip, timeline, events,
+  characters, lifelines, edges,
+  network, locations, movement,
+} from '../../src/index.js';
+
+const STORIES = [
+  { label: 'Little Red Riding Hood', file: new URL('../../stories/little-red-riding-hood.json', import.meta.url).href },
+  { label: 'Romeo & Juliet',         file: new URL('../../stories/romeo-and-juliet.json',        import.meta.url).href },
+  { label: 'The Ashford Affair',     file: new URL('../../stories/ashford-affair.json',          import.meta.url).href },
+];
+
+let currentStory = null;
+let apis = [];
+
+// Timeline-based cards: wide and short
+const TALL = 860 / 320;
+// Standalone cards: wide enough that the force sim doesn't leave dead space
+const SQ   = 860 / 420;
+
+const PAD  = { top: 16, right: 16, bottom: 16, left: 16 };
+const BASE = { responsive: true, padding: PAD };
+
+function renderAll() {
+  if (!currentStory) return;
+  apis.forEach(a => a?.destroy?.());
+  apis = [];
+
+  const err = document.getElementById('error-banner');
+  err.style.display = 'none';
+
+  function make(id, opts, ...prims) {
+    try {
+      const api = storysense(id, currentStory, { ...BASE, ...opts });
+      prims.forEach(p => api.add(p));
+      apis.push(api.render());
+    } catch (e) {
+      err.textContent = `[${id}] ${e.message}`;
+      err.style.display = 'block';
+      console.error(id, e);
+    }
+  }
+
+  // ── Axis & Time ─────────────────────────────────────────────────────────────
+  make('#c-timeline', { aspectRatio: TALL, axisRatio: 0.5 },
+    tooltip(),
+    timeline({ direction: 'x', stroke: '#c7d2fe', tickRadius: 5, labels: true })
+  );
+
+  make('#c-events', { aspectRatio: TALL, axisRatio: 0.5 },
+    tooltip(),
+    timeline({ direction: 'x', stroke: '#e5e7eb', tickRadius: 0 }),
+    events({ shape: 'dot', r: 6, fill: '#172554', titles: true })
+  );
+
+  // ── Characters ──────────────────────────────────────────────────────────────
+  make('#c-char-lane', { aspectRatio: TALL, axisRatio: 0.72 },
+    tooltip(),
+    timeline({ direction: 'x', stroke: '#e5e7eb', tickRadius: 4 }),
+    characters({ layout: 'lane', side: 'above', r: 11, laneSpacing: 28, labels: true })
+  );
+
+  make('#c-char-force', { aspectRatio: TALL, axisRatio: 0.72 },
+    tooltip(),
+    timeline({ direction: 'x', stroke: '#e5e7eb', tickRadius: 4 }),
+    characters({ layout: 'force', side: 'above', r: 11 })
+  );
+
+  make('#c-lifelines', { aspectRatio: TALL, axisRatio: 0.72 },
+    tooltip(),
+    timeline({ direction: 'x', stroke: '#e5e7eb', tickRadius: 4 }),
+    characters({ layout: 'lane', side: 'above', r: 11, laneSpacing: 28, labels: true }),
+    lifelines({ strokeWidth: 2.5, opacity: 0.7 })
+  );
+
+  make('#c-edges', { aspectRatio: TALL, axisRatio: 0.72 },
+    tooltip(),
+    timeline({ direction: 'x', stroke: '#e5e7eb', tickRadius: 4 }),
+    characters({ layout: 'force', side: 'above', r: 11 }),
+    edges({ strokeWidth: 1.5, opacity: 0.7, arrow: true, curvature: 28})
+  );
+
+  // ── Network ──────────────────────────────────────────────────────────────────
+  make('#c-network', { aspectRatio: SQ },
+    tooltip(),
+    network({ r: 20, labels: true })
+  );
+
+  // ── Locations ────────────────────────────────────────────────────────────────
+  make('#c-locations', { aspectRatio: SQ },
+    tooltip(),
+    locations({ r: 28, labels: true })
+  );
+
+  make('#c-movement', { aspectRatio: SQ },
+    tooltip(),
+    locations({ r: 28, labels: true }),
+    movement({ arrow: true })
+  );
+}
+
+// ── Story selector ────────────────────────────────────────────────────────────
+async function loadBuiltIn(file, label) {
+  try {
+    const res = await fetch(file);
+    if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${file}`);
+    const raw = await res.json();
+    currentStory = normalizeNarrative(raw);
+    renderAll();
+  } catch (e) {
+    const err = document.getElementById('error-banner');
+    err.textContent = `Could not load "${label}": ${e.message}`;
+    err.style.display = 'block';
+  }
+}
+
+function loadJSON(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const raw = JSON.parse(ev.target.result);
+      currentStory = normalizeNarrative(raw);
+      const sel = document.getElementById('story-select');
+      let opt = sel.querySelector('[value="__custom__"]');
+      if (!opt) { opt = document.createElement('option'); opt.value = '__custom__'; sel.appendChild(opt); }
+      opt.textContent = file.name;
+      sel.value = '__custom__';
+      renderAll();
+    } catch {
+      const err = document.getElementById('error-banner');
+      err.textContent = `"${file.name}" is not valid JSON.`;
+      err.style.display = 'block';
+    }
+  };
+  reader.readAsText(file);
+}
+
+const sel = document.getElementById('story-select');
+STORIES.forEach((s, i) => {
+  const opt = document.createElement('option');
+  opt.value = i; opt.textContent = s.label;
+  sel.appendChild(opt);
+});
+
+sel.addEventListener('change', () => {
+  if (sel.value === '__custom__') return;
+  const s = STORIES[+sel.value];
+  if (s) loadBuiltIn(s.file, s.label);
+});
+
+document.getElementById('file-input').addEventListener('change', e => {
+  if (e.target.files[0]) loadJSON(e.target.files[0]);
+  e.target.value = '';
+});
+
+loadBuiltIn(STORIES[0].file, STORIES[0].label);
+</script>
+
+</body>
+</html>

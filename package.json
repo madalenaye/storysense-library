@@ -1,0 +1,9 @@
+{
+  "name": "storysense",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Framework-agnostic narrative visualization library. Browser ESM — imports D3 from CDN.",
+  "keywords": ["narrative", "visualization", "d3", "storytelling"],
+  "main": "src/index.js",
+  "dependencies": {}
+}

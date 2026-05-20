@@ -1,0 +1,132 @@
+{
+  "title": "Little Red Riding Hood",
+  "description": "A classic fairy tale of deception, danger, and rescue in the forest.",
+
+  "story": {
+    "title": "Little Red Riding Hood",
+    "eventIds": ["e1", "e2", "e3", "e4", "e5", "e6", "e7"]
+  },
+
+  "participants": [
+    { "id": "red",         "name": "Red Riding Hood", "domain": "INDIVIDUAL", "description": "A young girl sent to deliver food to her ailing grandmother." },
+    { "id": "mother",      "name": "Mother",           "domain": "INDIVIDUAL", "description": "Prepares the basket and warns Red Riding Hood to stay on the path." },
+    { "id": "wolf",        "name": "The Wolf",         "domain": "INDIVIDUAL", "description": "A cunning predator who manipulates Red Riding Hood to reach the cottage first." },
+    { "id": "grandmother", "name": "Grandmother",      "domain": "INDIVIDUAL", "description": "Red Riding Hood's ailing grandmother, living alone in the cottage." },
+    { "id": "hunter",      "name": "Hunter",           "domain": "INDIVIDUAL", "description": "A forest huntsman who rescues Red Riding Hood and Grandmother." }
+  ],
+
+  "locations": [
+    { "id": "home",    "name": "Home",                  "type": "PHYSICAL" },
+    { "id": "forest",  "name": "The Forest",            "type": "PHYSICAL" },
+    { "id": "cottage", "name": "Grandmother's Cottage", "type": "PHYSICAL" }
+  ],
+
+  "times": [
+    { "id": "morning",   "value": "Morning",   "type": "TIME" },
+    { "id": "midday",    "value": "Midday",    "type": "TIME" },
+    { "id": "afternoon", "value": "Afternoon", "type": "TIME" },
+    { "id": "evening",   "value": "Evening",   "type": "TIME" }
+  ],
+
+  "events": [
+    {
+      "id": "e1",
+      "title": "The Farewell",
+      "description": "Mother packs a basket and sends Red Riding Hood to visit Grandmother, warning her to stay on the path.",
+      "locationId": "home",
+      "timeId": "morning",
+      "participations": [
+        { "entryOrder": 1, "participantId": "mother", "role": "MENTOR",      "presenceType": "ACTIVE" },
+        { "entryOrder": 2, "participantId": "red",    "role": "PROTAGONIST", "presenceType": "ACTIVE" }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "mother", "toParticipantId": "red", "action": "warns", "description": "Stay on the path. Do not speak to strangers.", "sentiment": "POSITIVE" }
+      ]
+    },
+    {
+      "id": "e2",
+      "title": "Into the Woods",
+      "description": "Red Riding Hood walks alone through the forest.",
+      "locationId": "forest",
+      "timeId": "morning",
+      "participations": [
+        { "entryOrder": 1, "participantId": "red", "role": "PROTAGONIST", "presenceType": "ACTIVE" }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "e3",
+      "title": "The Encounter",
+      "description": "The Wolf appears on the path and strikes up a friendly conversation.",
+      "locationId": "forest",
+      "timeId": "midday",
+      "participations": [
+        { "entryOrder": 1, "participantId": "red",  "role": "PROTAGONIST", "presenceType": "ACTIVE" },
+        { "entryOrder": 2, "participantId": "wolf", "role": "ANTAGONIST",  "presenceType": "ACTIVE" }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "wolf", "toParticipantId": "red", "action": "questions", "description": "Where are you going, little girl?", "sentiment": "NEGATIVE" }
+      ]
+    },
+    {
+      "id": "e4",
+      "title": "The Deception",
+      "description": "The Wolf persuades Red Riding Hood to pick flowers, then races ahead to the cottage.",
+      "locationId": "forest",
+      "timeId": "midday",
+      "participations": [
+        { "entryOrder": 1, "participantId": "wolf", "role": "ANTAGONIST",  "presenceType": "ACTIVE"  },
+        { "entryOrder": 2, "participantId": "red",  "role": "PROTAGONIST", "presenceType": "PASSIVE" }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "wolf", "toParticipantId": "red", "action": "deceives", "description": "Go pick some flowers for your grandmother.", "sentiment": "NEGATIVE" }
+      ]
+    },
+    {
+      "id": "e5",
+      "title": "The Wolf Arrives",
+      "description": "The Wolf reaches the cottage first, tricks Grandmother, and swallows her.",
+      "locationId": "cottage",
+      "timeId": "afternoon",
+      "participations": [
+        { "entryOrder": 1, "participantId": "wolf",        "role": "ANTAGONIST", "presenceType": "ACTIVE"  },
+        { "entryOrder": 2, "participantId": "grandmother", "role": "VICTIM",     "presenceType": "PASSIVE" }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "wolf", "toParticipantId": "grandmother", "action": "threatens", "description": "The Wolf devours Grandmother and takes her place.", "sentiment": "NEGATIVE" }
+      ]
+    },
+    {
+      "id": "e6",
+      "title": "What Big Eyes You Have",
+      "description": "Red Riding Hood arrives and is puzzled by Grandmother's strange appearance — it is the Wolf in disguise.",
+      "locationId": "cottage",
+      "timeId": "afternoon",
+      "participations": [
+        { "entryOrder": 1, "participantId": "red",         "role": "PROTAGONIST", "presenceType": "ACTIVE"   },
+        { "entryOrder": 2, "participantId": "wolf",        "role": "ANTAGONIST",  "presenceType": "ACTIVE"   },
+        { "entryOrder": 3, "participantId": "grandmother", "role": "VICTIM",      "presenceType": "MENTIONED" }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "wolf", "toParticipantId": "red", "action": "deceives", "description": "All the better to eat you with!", "sentiment": "NEGATIVE" }
+      ]
+    },
+    {
+      "id": "e7",
+      "title": "The Rescue",
+      "description": "A hunter hears Red Riding Hood's cries, bursts in, slays the Wolf, and frees Grandmother.",
+      "locationId": "cottage",
+      "timeId": "evening",
+      "participations": [
+        { "entryOrder": 1, "participantId": "hunter",      "role": "HELPER",      "presenceType": "ACTIVE"  },
+        { "entryOrder": 2, "participantId": "red",         "role": "PROTAGONIST", "presenceType": "PASSIVE" },
+        { "entryOrder": 3, "participantId": "wolf",        "role": "ANTAGONIST",  "presenceType": "PASSIVE" },
+        { "entryOrder": 4, "participantId": "grandmother", "role": "VICTIM",      "presenceType": "PASSIVE" }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "hunter", "toParticipantId": "wolf",        "action": "confronts", "description": "The Hunter slays the Wolf.",          "sentiment": "POSITIVE" },
+        { "temporalOrder": 2, "fromParticipantId": "hunter", "toParticipantId": "grandmother", "action": "rescues",   "description": "Grandmother is freed and recovered.", "sentiment": "POSITIVE" }
+      ]
+    }
+  ]
+}

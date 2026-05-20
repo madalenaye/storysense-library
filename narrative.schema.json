@@ -1,0 +1,247 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/schemas/narrative.schema.json",
+  "title": "Narrative",
+  "description": "A narrative is composed of one Story (the fabula: what happened) and one or more Discourses (the syuzhet: how it is told). Events, locations, times, and participants are defined once at the top level and referenced by id from anywhere in the document.",
+  "type": "object",
+  "required": ["title", "story"],
+  "additionalProperties": false,
+  "properties": {
+    "title": { "type": "string" },
+    "description": { "type": "string" },
+
+    "story": { "$ref": "#/$defs/Story" },
+    "discourses": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Discourse" }
+    },
+
+    "events": {
+      "type": "array",
+      "description": "All events that occur in the story. Referenced by id from Story.eventIds, Fragment.eventIds, and Event.causedByEventIds.",
+      "items": { "$ref": "#/$defs/Event" }
+    },
+    "locations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Location" }
+    },
+    "times": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Time" }
+    },
+    "participants": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Participant" }
+    }
+  },
+
+  "$defs": {
+    "Identifier": {
+      "type": "string",
+      "minLength": 1,
+      "description": "A stable, unique identifier within this document."
+    },
+
+    "MediumType": {
+      "type": "string",
+      "enum": ["TEXT", "AUDIO", "VIDEO", "IMAGE", "INTERACTIVE"]
+    },
+    "LocationType": {
+      "type": "string",
+      "enum": ["PHYSICAL", "TRANSITIONAL", "VIRTUAL", "METAPHYSICAL"]
+    },
+    "TimeType": {
+      "type": "string",
+      "enum": ["DATE", "TIME", "DURATION", "SET"]
+    },
+    "DomainType": {
+      "type": "string",
+      "enum": ["SET", "INDIVIDUAL", "OBJECT"]
+    },
+    "PresenceType": {
+      "type": "string",
+      "enum": ["ACTIVE", "PASSIVE", "MENTIONED"],
+      "description": "How a participant is present in an event. ACTIVE: drives the action. PASSIVE: present and affected but not driving. MENTIONED: referenced in narration or dialogue without being physically present."
+    },
+    "Sentiment": {
+      "type": "string",
+      "enum": ["POSITIVE", "NEGATIVE", "NEUTRAL"],
+      "description": "The overall affective valence of a directed interaction (effectively the from-participant's affect toward the to-participant, since interactions are directional)."
+    },
+    "Role": {
+      "type": "string",
+      "description": "The narrative role a participant plays in an event (e.g. protagonist, antagonist, helper, victim, witness, mentor, foil). Kept as an open string so authors can use vocabularies suited to their corpus, but a recommended inventory is offered for validation and tooling consistency. Recommended values: PROTAGONIST, ANTAGONIST, HELPER, VICTIM, WITNESS, MENTOR, FOIL, DONOR, PROP (for object-domain participants with narrative significance)."
+    },
+
+    "Story": {
+      "type": "object",
+      "description": "The fabula: the ordered set of events that constitute what happened, independent of how it is told.",
+      "required": ["title", "eventIds"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string" },
+        "eventIds": {
+          "type": "array",
+          "description": "References to events in the top-level events array. A story has at least one event (1..*).",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/Identifier" }
+        }
+      }
+    },
+
+    "Discourse": {
+      "type": "object",
+      "description": "A particular telling of the story: a sequence of fragments in some medium.",
+      "required": ["medium", "fragments"],
+      "additionalProperties": false,
+      "properties": {
+        "medium":  { "$ref": "#/$defs/MediumType" },
+        "author":  { "type": "string" },
+        "language":{ "type": "string" },
+        "version": { "type": "string" },
+        "support": { "type": "string" },
+        "fragments": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Fragment" }
+        }
+      }
+    },
+
+    "Fragment": {
+      "type": "object",
+      "description": "A unit of discourse (a paragraph, shot, panel, audio clip...) that references exactly one event from the story. An event may be referenced by many fragments.",
+      "required": ["fragment", "eventId"],
+      "additionalProperties": false,
+      "properties": {
+        "fragment": {
+          "$ref": "#/$defs/MediumType",
+          "description": "The medium of this individual fragment. Defaults to the discourse medium but can differ for mixed-medium discourses."
+        },
+        "eventId": {
+          "$ref": "#/$defs/Identifier",
+          "description": "The Event this fragment references (references association in the UML, multiplicity Event 1 — * Fragment)."
+        }
+      }
+    },
+
+    "Event": {
+      "type": "object",
+      "description": "A single occurrence in the story. Events are ordered within the story by their position in Story.eventIds.",
+      "required": ["id", "title"],
+      "additionalProperties": false,
+      "properties": {
+        "id":          { "$ref": "#/$defs/Identifier" },
+        "title":       { "type": "string" },
+        "description": { "type": "string" },
+
+        "locationId": {
+          "$ref": "#/$defs/Identifier",
+          "description": "occursAt: reference to a Location."
+        },
+        "timeId": {
+          "$ref": "#/$defs/Identifier",
+          "description": "during: reference to a Time."
+        },
+        "causedByEventIds": {
+          "type": "array",
+          "description": "Events that cause this event (causes self-association, modeled here as inbound references).",
+          "items": { "$ref": "#/$defs/Identifier" }
+        },
+        "partOfEventIds": {
+          "type": "array",
+          "description": "Larger events that this event is part of (partOf self-association — mereology, distinct from causality).",
+          "items": { "$ref": "#/$defs/Identifier" }
+        },
+
+        "participations": {
+          "type": "array",
+          "description": "Participants involved in this event and the role they play. Each Participation carries a unique entryOrder within this event (UML qualifier on the belongsTo association).",
+          "items": { "$ref": "#/$defs/Participation" }
+        },
+        "interactions": {
+          "type": "array",
+          "description": "Directed interactions between participants that occur within this event. Each Interaction carries a unique temporalOrder within this event (UML qualifier on the has association).",
+          "items": { "$ref": "#/$defs/Interaction" }
+        }
+      }
+    },
+
+    "Participation": {
+      "type": "object",
+      "description": "A participant's involvement in an event. Acts as the association class between Event and Participant. entryOrder is the UML qualifier on the belongsTo association: it indexes participations within their parent Event, so that 'the participant who appears first in this event' is well-defined. Within a single Event, no two Participations share an entryOrder.",
+      "required": ["entryOrder", "participantId", "role"],
+      "additionalProperties": false,
+      "properties": {
+        "entryOrder":    { "type": "integer", "description": "Order in which this participant enters the event. Unique within its parent Event." },
+        "participantId": { "$ref": "#/$defs/Identifier" },
+        "role":  { "$ref": "#/$defs/Role" },
+        "presenceType": {
+          "$ref": "#/$defs/PresenceType",
+          "description": "Optional: how this participant is present in the event (active, passive, or mentioned)."
+        }
+      }
+    },
+
+    "Interaction": {
+      "type": "object",
+      "description": "A directed action from one participant to another within an event. temporalOrder is the UML qualifier on the has association: it indexes interactions within their parent Event, so that 'the interaction that happens first during this event' is well-defined. Within a single Event, no two Interactions share a temporalOrder.",
+      "required": ["temporalOrder", "action", "fromParticipantId", "toParticipantId"],
+      "additionalProperties": false,
+      "properties": {
+        "temporalOrder":     { "type": "integer", "description": "Order in which this interaction occurs during the event. Unique within its parent Event." },
+        "action":      { "type": "string" },
+        "description": { "type": "string" },
+        "fromParticipantId": { "$ref": "#/$defs/Identifier" },
+        "toParticipantId":   { "$ref": "#/$defs/Identifier" },
+        "sentiment": {
+          "$ref": "#/$defs/Sentiment",
+          "description": "Optional: overall affective valence of this directed interaction."
+        }
+      }
+    },
+
+    "Location": {
+      "type": "object",
+      "required": ["id", "name", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":          { "$ref": "#/$defs/Identifier" },
+        "name":        { "type": "string" },
+        "type":        { "$ref": "#/$defs/LocationType" },
+        "synonyms": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "description": { "type": "string" }
+      }
+    },
+
+    "Time": {
+      "type": "object",
+      "required": ["id", "value", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "id":    { "$ref": "#/$defs/Identifier" },
+        "value": { "type": "string", "description": "Lexical value; interpretation depends on type (ISO date, time, duration, or set/recurrence)." },
+        "type":  { "$ref": "#/$defs/TimeType" }
+      }
+    },
+
+    "Participant": {
+      "type": "object",
+      "description": "An entity that can participate in events or interactions: an individual, a set/group, or an object.",
+      "required": ["id", "name", "domain"],
+      "additionalProperties": false,
+      "properties": {
+        "id":          { "$ref": "#/$defs/Identifier" },
+        "name":        { "type": "string" },
+        "synonyms": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "domain":      { "$ref": "#/$defs/DomainType" },
+        "description": { "type": "string" }
+      }
+    }
+  }
+}

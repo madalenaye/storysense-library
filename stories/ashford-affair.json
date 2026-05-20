@@ -1,0 +1,155 @@
+{
+  "title": "The Ashford Affair",
+  "description": "A murder investigation at an English country manor unfolds over three days.",
+
+  "story": {
+    "title": "The Ashford Affair",
+    "eventIds": ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"]
+  },
+
+  "participants": [
+    { "id": "eleanor", "name": "Eleanor", "domain": "INDIVIDUAL", "description": "The detective investigating the death at Ashford Manor." },
+    { "id": "thomas",  "name": "Thomas",  "domain": "INDIVIDUAL", "description": "A guest at the manor with knowledge of the victim." },
+    { "id": "ida",     "name": "Ida",     "domain": "INDIVIDUAL", "description": "A local woman with ties to the manor's secrets." },
+    { "id": "victor",  "name": "Victor",  "domain": "INDIVIDUAL", "description": "The prime suspect, hiding something significant." }
+  ],
+
+  "locations": [
+    { "id": "manor",   "name": "Ashford Manor",  "type": "PHYSICAL" },
+    { "id": "village", "name": "Village Square", "type": "PHYSICAL" },
+    { "id": "woods",   "name": "Dark Woods",     "type": "PHYSICAL" },
+    { "id": "station", "name": "Train Station",  "type": "PHYSICAL" },
+    { "id": "cellar",  "name": "Wine Cellar",    "type": "PHYSICAL" }
+  ],
+
+  "times": [
+    { "id": "d1m",  "value": "Day 1 — Morning",   "type": "TIME" },
+    { "id": "d1n",  "value": "Day 1 — Noon",       "type": "TIME" },
+    { "id": "d1a",  "value": "Day 1 — Afternoon",  "type": "TIME" },
+    { "id": "d1e",  "value": "Day 1 — Evening",    "type": "TIME" },
+    { "id": "d2m",  "value": "Day 2 — Morning",    "type": "TIME" },
+    { "id": "d2n",  "value": "Day 2 — Noon",       "type": "TIME" },
+    { "id": "d2a",  "value": "Day 2 — Afternoon",  "type": "TIME" },
+    { "id": "d3",   "value": "Day 3",               "type": "DATE" }
+  ],
+
+  "events": [
+    {
+      "id": "s1",
+      "title": "A Death at the Manor",
+      "description": "Eleanor and Thomas discover the body. Victor is suspiciously evasive.",
+      "locationId": "manor",
+      "timeId": "d1m",
+      "participations": [
+        { "entryOrder": 1, "participantId": "eleanor", "role": "PROTAGONIST", "presenceType": "ACTIVE" },
+        { "entryOrder": 2, "participantId": "thomas",  "role": "WITNESS",     "presenceType": "ACTIVE" },
+        { "entryOrder": 3, "participantId": "victor",  "role": "ANTAGONIST",  "presenceType": "ACTIVE" }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "eleanor", "toParticipantId": "thomas", "action": "dialogue",  "description": "Eleanor interrogates Thomas about the night before.",   "sentiment": "NEUTRAL"  },
+        { "temporalOrder": 2, "fromParticipantId": "victor",  "toParticipantId": "eleanor", "action": "dialogue", "description": "Victor provides a false alibi.",                      "sentiment": "NEGATIVE" }
+      ]
+    },
+    {
+      "id": "s2",
+      "title": "Rumours in the Square",
+      "description": "Ida approaches Thomas in the village with information she has been sitting on.",
+      "locationId": "village",
+      "timeId": "d1n",
+      "participations": [
+        { "entryOrder": 1, "participantId": "ida",    "role": "HELPER",  "presenceType": "ACTIVE" },
+        { "entryOrder": 2, "participantId": "thomas", "role": "WITNESS", "presenceType": "ACTIVE" }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "ida", "toParticipantId": "thomas", "action": "dialogue", "description": "Ida tips Thomas off about something she saw the previous night.", "sentiment": "POSITIVE" }
+      ]
+    },
+    {
+      "id": "s3",
+      "title": "The Hidden Path",
+      "description": "Eleanor follows Ida into the Dark Woods, suspecting she knows more than she has said.",
+      "locationId": "woods",
+      "timeId": "d1a",
+      "participations": [
+        { "entryOrder": 1, "participantId": "eleanor", "role": "PROTAGONIST", "presenceType": "ACTIVE" },
+        { "entryOrder": 2, "participantId": "ida",     "role": "HELPER",      "presenceType": "ACTIVE" }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "eleanor", "toParticipantId": "ida", "action": "action", "description": "Eleanor shadows Ida along the hidden path.", "sentiment": "NEUTRAL" }
+      ]
+    },
+    {
+      "id": "s4",
+      "title": "Victor Flees",
+      "description": "Thomas intercepts Victor at the train station before he can escape.",
+      "locationId": "station",
+      "timeId": "d1e",
+      "participations": [
+        { "entryOrder": 1, "participantId": "thomas", "role": "WITNESS",    "presenceType": "ACTIVE" },
+        { "entryOrder": 2, "participantId": "victor", "role": "ANTAGONIST", "presenceType": "ACTIVE" }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "thomas", "toParticipantId": "victor", "action": "action", "description": "Thomas confronts Victor and physically prevents his departure.", "sentiment": "NEGATIVE" }
+      ]
+    },
+    {
+      "id": "s5",
+      "title": "Secret Meeting",
+      "description": "Eleanor and Ida confront Victor in the wine cellar with their combined evidence.",
+      "locationId": "cellar",
+      "timeId": "d2m",
+      "participations": [
+        { "entryOrder": 1, "participantId": "eleanor", "role": "PROTAGONIST", "presenceType": "ACTIVE" },
+        { "entryOrder": 2, "participantId": "ida",     "role": "HELPER",      "presenceType": "ACTIVE" },
+        { "entryOrder": 3, "participantId": "victor",  "role": "ANTAGONIST",  "presenceType": "ACTIVE" }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "eleanor", "toParticipantId": "victor", "action": "dialogue", "description": "Eleanor formally accuses Victor.",         "sentiment": "NEGATIVE" },
+        { "temporalOrder": 2, "fromParticipantId": "ida",     "toParticipantId": "victor", "action": "dialogue", "description": "Ida presents her eyewitness testimony.", "sentiment": "NEGATIVE" }
+      ]
+    },
+    {
+      "id": "s6",
+      "title": "Thomas Investigates",
+      "description": "Thomas searches the manor alone, piecing together the remaining gaps.",
+      "locationId": "manor",
+      "timeId": "d2n",
+      "participations": [
+        { "entryOrder": 1, "participantId": "thomas", "role": "WITNESS", "presenceType": "ACTIVE" }
+      ],
+      "interactions": []
+    },
+    {
+      "id": "s7",
+      "title": "Confrontation",
+      "description": "All four meet at the manor. Eleanor arrests Victor; Victor confesses. Thomas thanks Ida for her courage.",
+      "locationId": "manor",
+      "timeId": "d2a",
+      "participations": [
+        { "entryOrder": 1, "participantId": "eleanor", "role": "PROTAGONIST", "presenceType": "ACTIVE" },
+        { "entryOrder": 2, "participantId": "thomas",  "role": "WITNESS",     "presenceType": "ACTIVE" },
+        { "entryOrder": 3, "participantId": "victor",  "role": "ANTAGONIST",  "presenceType": "ACTIVE" },
+        { "entryOrder": 4, "participantId": "ida",     "role": "HELPER",      "presenceType": "ACTIVE" }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "eleanor", "toParticipantId": "victor",  "action": "action",   "description": "Eleanor places Victor under arrest.",             "sentiment": "NEGATIVE" },
+        { "temporalOrder": 2, "fromParticipantId": "victor",  "toParticipantId": "eleanor", "action": "dialogue", "description": "Victor finally confesses to the crime.",          "sentiment": "NEUTRAL"  },
+        { "temporalOrder": 3, "fromParticipantId": "thomas",  "toParticipantId": "ida",     "action": "dialogue", "description": "Thomas thanks Ida for her crucial testimony.",   "sentiment": "POSITIVE" }
+      ]
+    },
+    {
+      "id": "s8",
+      "title": "Departure",
+      "description": "Eleanor and Thomas part ways at the station, the case closed.",
+      "locationId": "station",
+      "timeId": "d3",
+      "participations": [
+        { "entryOrder": 1, "participantId": "eleanor", "role": "PROTAGONIST", "presenceType": "ACTIVE" },
+        { "entryOrder": 2, "participantId": "thomas",  "role": "WITNESS",     "presenceType": "ACTIVE" }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "eleanor", "toParticipantId": "thomas", "action": "dialogue", "description": "They exchange a final farewell.", "sentiment": "POSITIVE" }
+      ]
+    }
+  ]
+}

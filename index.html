@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Storysense</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8f7f4;
+      color: #1f2937;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      padding: 64px 24px;
+    }
+
+    /* ── Hero ── */
+    .hero { max-width: 580px; text-align: center; }
+
+    h1 {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: #111827;
+    }
+
+    .tagline {
+      margin-top: 14px;
+      font-size: 1.05rem;
+      color: #6b7280;
+      line-height: 1.7;
+    }
+
+    /* ── Buttons ── */
+    .actions {
+      margin-top: 36px;
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 11px 28px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: #172554;
+      color: #fff;
+      border: 2px solid #172554;
+    }
+    .btn-primary:hover { background: #0f172a; border-color: #0f172a; }
+
+    .btn-secondary {
+      background: #fff;
+      color: #374151;
+      border: 2px solid #d1d5db;
+    }
+    .btn-secondary:hover { border-color: #172554; color: #172554; }
+
+    /* ── Code block ── */
+    .snippet {
+      background: #1e1e2e;
+      border-radius: 14px;
+      padding: 24px 28px;
+      width: 100%;
+      max-width: 580px;
+    }
+
+    .snippet-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #6c7086;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .snippet pre {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.8rem;
+      line-height: 1.75;
+      color: #cdd6f4;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    .c { color: #585b70; }   /* comment  */
+    .k { color: #93c5fd; }   /* keyword  */
+    .s { color: #a6e3a1; }   /* string   */
+    .f { color: #89b4fa; }   /* function */
+    .n { color: #fab387; }   /* number   */
+
+    /* ── Footer note ── */
+    .note {
+      font-size: 0.78rem;
+      color: #9ca3af;
+      text-align: center;
+    }
+
+    .note code {
+      background: #e5e7eb;
+      padding: 2px 7px;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 0.85em;
+      color: #374151;
+    }
+  </style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Storysense</h1>
+  <p class="tagline">
+    Narrative visualization as composable building blocks.<br>
+    You just need to pick the pieces you need, chain them together, and render.
+    No framework and no build step.
+  </p>
+
+  <div class="actions">
+    <a class="btn btn-primary" href="primitives/">Explore Primitives</a>
+    <a class="btn btn-secondary" href="demo/index.html">Open Demo</a>
+  </div>
+</div>
+
+<div class="snippet">
+  <p class="snippet-label">Quick start</p>
+  <pre><span class="k">import</span> SS <span class="k">from</span> <span class="s">'./storysense-lib/src/index.js'</span>;
+
+<span class="c">// 1. Load and normalize your story JSON</span>
+<span class="k">const</span> raw   = <span class="k">await</span> fetch(<span class="s">'./story.json'</span>).then(r => r.json());
+<span class="k">const</span> story = SS.<span class="f">normalizeNarrative</span>(raw);
+
+<span class="c">// 2. Compose primitives and render</span>
+SS.<span class="f">storysense</span>(<span class="s">'#chart'</span>, story, { responsive: <span class="k">true</span>, aspectRatio: <span class="n">860</span>/<span class="n">460</span> })
+  .<span class="f">add</span>(SS.<span class="f">tooltip</span>())
+  .<span class="f">add</span>(SS.<span class="f">timeline</span>({ direction: <span class="s">'x'</span> }))
+  .<span class="f">add</span>(SS.<span class="f">characters</span>({ layout: <span class="s">'lane'</span>, r: <span class="n">14</span>, labels: <span class="k">true</span> }))
+  .<span class="f">add</span>(SS.<span class="f">lifelines</span>())
+  .<span class="f">render</span>();
+
+<span class="c">// CDN import (no download needed):</span>
+<span class="c">// import SS from 'https://cdn.jsdelivr.net/gh/madalenaye/storysense-library@latest/src/index.js'</span></pre>
+</div>
+
+<p class="note">
+  Requires a local server. Run <code>npx serve .</code> or <code>python3 -m http.server</code> from this folder.
+</p>
+
+</body>
+</html>

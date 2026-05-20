@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Storysense</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #f8f7f4;
+      color: #1f2937;
+      padding: 32px 24px;
+    }
+
+    h1 { font-size: 1.5rem; font-weight: 700; margin-bottom: 4px; }
+    p.sub { font-size: 0.875rem; color: #6b7280; margin-bottom: 20px; }
+
+    /* ── Story selector bar ── */
+    .story-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .story-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #6b7280;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .story-select {
+      padding: 6px 12px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 0.875rem;
+      color: #374151;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .story-select:focus, .story-select:hover { border-color: #172554; }
+
+    .story-divider {
+      width: 1px; height: 20px;
+      background: #e5e7eb;
+    }
+
+    .upload-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border: 1.5px solid #d1d5db;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #374151;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .upload-btn:hover { border-color: #172554; color: #172554; }
+
+    .story-title {
+      font-size: 0.875rem;
+      color: #6b7280;
+      font-style: italic;
+    }
+
+    /* ── View tabs ── */
+    .tabs {
+      display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 6px 16px;
+      border-radius: 999px;
+      border: 1.5px solid #d1d5db;
+      background: #fff;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #374151;
+      transition: all 0.15s;
+    }
+
+    .tab.active {
+      background: #172554;
+      border-color: #172554;
+      color: #fff;
+    }
+
+    .tab:hover:not(.active) { border-color: #172554; color: #172554; }
+
+    /* ── Chart ── */
+    #chart {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 8px;
+      overflow: hidden;
+      max-width: 920px;
+    }
+
+    #chart svg { display: block; }
+
+    /* ── Error ── */
+    .error-msg {
+      display: none;
+      margin-top: 16px;
+      padding: 10px 16px;
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+      border-radius: 8px;
+      font-size: 0.8rem;
+    }
+
+    footer {
+      margin-top: 24px;
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Storysense</h1>
+<p class="sub">Compose primitives, see the result. Switch stories or load your own JSON.</p>
+
+<!-- Story selector -->
+<div class="story-bar">
+  <span class="story-label">Story</span>
+  <select class="story-select" id="story-select">
+    <!-- Populated by JS from STORIES registry -->
+  </select>
+
+  <div class="story-divider"></div>
+
+  <label class="upload-btn" title="Load any storysense-formatted JSON file">
+    <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+      <path d="M8 1v9M4 5l4-4 4 4M2 12h12v2H2z" stroke="currentColor" stroke-width="1.6"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Load JSON
+    <input type="file" id="file-input" accept=".json" style="display:none" />
+  </label>
+
+  <span class="story-title" id="story-title"></span>
+</div>
+
+<!-- View tabs -->
+<div class="tabs">
+  <button class="tab active" data-view="storyline">Storyline</button>
+  <button class="tab" data-view="interactions">Interactions</button>
+  <button class="tab" data-view="network">Character Network</button>
+  <button class="tab" data-view="locations">Location Flow</button>
+</div>
+
+<div id="chart"></div>
+<div class="error-msg" id="error-msg"></div>
+
+<footer>Built with storysense · primitives composed freely · no framework</footer>
+
+<script type="module">
+import {
+  storysense, normalizeNarrative,
+  tooltip, timeline, events, characters, lifelines, edges, locations, movement, network,
+} from '../src/index.js';
+
+// ── Story registry ─────────────────────────────────────────────────────────────
+// import.meta.url gives the URL of this HTML file — guarantees the fetch path
+// is correct regardless of which directory the server is run from.
+const STORIES = [
+  { label: 'Little Red Riding Hood', file: new URL('../stories/little-red-riding-hood.json', import.meta.url).href },
+  { label: 'Romeo & Juliet',         file: new URL('../stories/romeo-and-juliet.json',        import.meta.url).href },
+  { label: 'The Ashford Affair',     file: new URL('../stories/ashford-affair.json',          import.meta.url).href },
+];
+
+// ── State ─────────────────────────────────────────────────────────────────────
+let currentStory = null;
+let currentView  = 'storyline';
+let currentApi   = null;  // track last chart instance to destroy its ResizeObserver
+
+const PAD = { top: 20, right: 20, bottom: 20, left: 20 };
+const AR  = 860 / 460;   // aspect ratio — keeps proportions as width changes
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  const errEl = document.getElementById('error-msg');
+  errEl.style.display = 'none';
+
+  if (!currentStory) return;
+
+  // Tear down previous ResizeObserver before creating a new chart
+  currentApi?.destroy();
+
+  try {
+    const base = { responsive: true, aspectRatio: AR, padding: PAD };
+
+    const views = {
+      storyline: () =>
+        storysense('#chart', currentStory, { ...base, axisRatio: 0.72 })
+          .add(tooltip())
+          .add(timeline({ direction: 'x', stroke: '#e5e7eb', tickRadius: 3 }))
+          .add(characters({ layout: 'lane', side: 'above', r: 14, laneSpacing: 36, labels: true }))
+          .add(lifelines({ strokeWidth: 3, opacity: 0.75 }))
+          .add(events({ shape: 'dot', r: 5, fill: '#e5e7eb' }))
+          .render(),
+
+      interactions: () =>
+        storysense('#chart', currentStory, { ...base, axisRatio: 0.72 })
+          .add(tooltip())
+          .add(timeline({ direction: 'x', stroke: '#e5e7eb', tickRadius: 4 }))
+          .add(characters({ layout: 'force', side: 'above', r: 15, perpDistance: 120, axisStrength: 0.3 }))
+          .add(edges({ strokeWidth: 2, opacity: 0.75, arrow: true, curvature: 28 }))
+          .render(),
+
+      network: () =>
+        storysense('#chart', currentStory, { ...base })
+          .add(tooltip())
+          .add(network({ r: 24, labels: true }))
+          .add(edges({ strokeWidth: 2.2, opacity: 0.5, arrow: false, curvature: 35 }))
+          .render(),
+
+      locations: () =>
+        storysense('#chart', currentStory, { ...base })
+          .add(tooltip())
+          .add(locations({ r: 30, labels: true }))
+          .add(movement({ arrow: true }))
+          .render(),
+    };
+
+    currentApi = views[currentView]?.();
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  }
+}
+
+// ── Load a built-in story ─────────────────────────────────────────────────────
+async function loadBuiltIn(file, label) {
+  try {
+    const res = await fetch(file);
+    if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${file}`);
+    const raw = await res.json();
+    currentStory = normalizeNarrative(raw);
+    document.getElementById('story-title').textContent = '';
+    render();
+  } catch (e) {
+    const errEl = document.getElementById('error-msg');
+    errEl.textContent = `Could not load "${label}": ${e.message}`;
+    errEl.style.display = 'block';
+  }
+}
+
+// ── Load a user-provided JSON file ────────────────────────────────────────────
+function loadJSON(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const raw = JSON.parse(e.target.result);
+      currentStory = normalizeNarrative(raw);
+      document.getElementById('story-title').textContent = currentStory.title ?? file.name;
+      // Mark select as "custom" so it doesn't mislead
+      const sel = document.getElementById('story-select');
+      let custom = sel.querySelector('option[value="__custom__"]');
+      if (!custom) {
+        custom = document.createElement('option');
+        custom.value = '__custom__';
+        sel.appendChild(custom);
+      }
+      custom.textContent = file.name;
+      sel.value = '__custom__';
+      render();
+    } catch {
+      const errEl = document.getElementById('error-msg');
+      errEl.textContent = `"${file.name}" is not valid JSON.`;
+      errEl.style.display = 'block';
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ── Populate dropdown ─────────────────────────────────────────────────────────
+const sel = document.getElementById('story-select');
+STORIES.forEach((s, i) => {
+  const opt = document.createElement('option');
+  opt.value = i;
+  opt.textContent = s.label;
+  sel.appendChild(opt);
+});
+
+sel.addEventListener('change', () => {
+  const idx = sel.value;
+  if (idx === '__custom__') return;
+  const s = STORIES[+idx];
+  if (s) loadBuiltIn(s.file, s.label);
+});
+
+document.getElementById('file-input').addEventListener('change', e => {
+  if (e.target.files[0]) loadJSON(e.target.files[0]);
+  e.target.value = ''; // reset so same file can be re-loaded
+});
+
+// ── View tabs ─────────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentView = btn.dataset.view;
+    render();
+  });
+});
+
+// ── Initial load ──────────────────────────────────────────────────────────────
+loadBuiltIn(STORIES[0].file, STORIES[0].label);
+</script>
+
+</body>
+</html>

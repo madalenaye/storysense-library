@@ -1,0 +1,240 @@
+{
+  "title": "Romeo & Juliet",
+  "description": "Shakespeare's tragedy of two young lovers caught in a family feud.",
+
+  "story": {
+    "title": "Romeo & Juliet",
+    "eventIds": ["e1","e2","e3","e4","e5","e6","e7","e8","e9","e10","e11"]
+  },
+
+  "participants": [
+    { "id": "romeo",    "name": "Romeo",          "domain": "INDIVIDUAL" },
+    { "id": "juliet",   "name": "Juliet",          "domain": "INDIVIDUAL" },
+    { "id": "mercutio", "name": "Mercutio",        "domain": "INDIVIDUAL" },
+    { "id": "tybalt",   "name": "Tybalt",          "domain": "INDIVIDUAL" },
+    { "id": "benvolio", "name": "Benvolio",        "domain": "INDIVIDUAL" },
+    { "id": "friar",    "name": "Friar Lawrence",  "domain": "INDIVIDUAL" },
+    { "id": "nurse",    "name": "The Nurse",       "domain": "INDIVIDUAL" },
+    { "id": "paris",    "name": "Count Paris",     "domain": "INDIVIDUAL" },
+    { "id": "capulet",  "name": "Lord Capulet",    "domain": "INDIVIDUAL" },
+    { "id": "prince",   "name": "Prince Escalus",  "domain": "INDIVIDUAL" }
+  ],
+
+  "locations": [
+    { "id": "square",       "name": "Verona Square",    "type": "PHYSICAL" },
+    { "id": "capulet_hall", "name": "Capulet Hall",     "type": "PHYSICAL" },
+    { "id": "balcony",      "name": "Juliet's Balcony", "type": "PHYSICAL" },
+    { "id": "friar_cell",   "name": "Friar's Cell",     "type": "PHYSICAL" },
+    { "id": "tomb",         "name": "Capulet Tomb",     "type": "PHYSICAL" }
+  ],
+
+  "times": [
+    { "id": "t1",  "value": "Sunday Evening",   "type": "TIME" },
+    { "id": "t2",  "value": "Sunday Night",      "type": "TIME" },
+    { "id": "t3",  "value": "Monday Morning",    "type": "TIME" },
+    { "id": "t4",  "value": "Monday Noon",       "type": "TIME" },
+    { "id": "t5",  "value": "Monday Dusk",       "type": "TIME" },
+    { "id": "t6",  "value": "Monday Night",      "type": "TIME" },
+    { "id": "t7",  "value": "Wednesday",         "type": "DATE" },
+    { "id": "t8",  "value": "Wednesday Evening", "type": "TIME" },
+    { "id": "t9",  "value": "Thursday Morning",  "type": "TIME" },
+    { "id": "t10", "value": "Friday Dawn",       "type": "TIME" },
+    { "id": "t11", "value": "Friday Morning",    "type": "TIME" }
+  ],
+
+  "events": [
+    {
+      "id": "e1",
+      "title": "The Capulet Feast",
+      "description": "Romeo and Benvolio crash the Capulet party in disguise. Romeo meets Juliet. Tybalt recognises Romeo and is held back by Lord Capulet.",
+      "timeId": "t1",
+      "locationId": "capulet_hall",
+      "participations": [
+        { "entryOrder": 1, "participantId": "romeo",    "role": "PROTAGONIST" },
+        { "entryOrder": 2, "participantId": "juliet",   "role": "PROTAGONIST" },
+        { "entryOrder": 3, "participantId": "tybalt",   "role": "ANTAGONIST"  },
+        { "entryOrder": 4, "participantId": "benvolio", "role": "HELPER"      },
+        { "entryOrder": 5, "participantId": "capulet",  "role": "FOIL"        },
+        { "entryOrder": 6, "participantId": "nurse",    "role": "HELPER"      },
+        { "entryOrder": 7, "participantId": "paris",    "role": "FOIL"        }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "romeo",   "toParticipantId": "juliet",  "action": "meets",     "description": "Romeo takes Juliet's hand and they share their first kiss.", "sentiment": "POSITIVE" },
+        { "temporalOrder": 2, "fromParticipantId": "tybalt",  "toParticipantId": "romeo",   "action": "threatens", "description": "Tybalt recognises Romeo and vows revenge for the intrusion.", "sentiment": "NEGATIVE" },
+        { "temporalOrder": 3, "fromParticipantId": "capulet", "toParticipantId": "tybalt",  "action": "restrains", "description": "Lord Capulet orders Tybalt to stand down to avoid a scene.", "sentiment": "NEUTRAL"  }
+      ]
+    },
+    {
+      "id": "e2",
+      "title": "The Balcony",
+      "description": "Romeo lingers after the feast and finds Juliet at her balcony. They confess their love and agree to marry.",
+      "timeId": "t2",
+      "locationId": "balcony",
+      "participations": [
+        { "entryOrder": 1, "participantId": "romeo",  "role": "PROTAGONIST" },
+        { "entryOrder": 2, "participantId": "juliet", "role": "PROTAGONIST" }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "romeo",  "toParticipantId": "juliet", "action": "professes love", "description": "Romeo swears his love by the moon.",              "sentiment": "POSITIVE" },
+        { "temporalOrder": 2, "fromParticipantId": "juliet", "toParticipantId": "romeo",  "action": "professes love", "description": "Juliet proposes marriage if his love is true.", "sentiment": "POSITIVE" }
+      ]
+    },
+    {
+      "id": "e3",
+      "title": "The Secret Marriage",
+      "description": "Romeo and Juliet marry in secret at Friar Lawrence's cell. The Nurse acts as witness.",
+      "timeId": "t3",
+      "locationId": "friar_cell",
+      "participations": [
+        { "entryOrder": 1, "participantId": "romeo",  "role": "PROTAGONIST" },
+        { "entryOrder": 2, "participantId": "juliet", "role": "PROTAGONIST" },
+        { "entryOrder": 3, "participantId": "friar",  "role": "MENTOR"      },
+        { "entryOrder": 4, "participantId": "nurse",  "role": "HELPER"      }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "friar", "toParticipantId": "romeo",  "action": "weds",      "description": "Friar Lawrence performs the marriage ceremony.", "sentiment": "POSITIVE" },
+        { "temporalOrder": 2, "fromParticipantId": "friar", "toParticipantId": "juliet", "action": "weds",      "description": "Friar Lawrence performs the marriage ceremony.", "sentiment": "POSITIVE" },
+        { "temporalOrder": 3, "fromParticipantId": "nurse", "toParticipantId": "juliet", "action": "witnesses", "description": "The Nurse stands as Juliet's witness.",           "sentiment": "POSITIVE" }
+      ]
+    },
+    {
+      "id": "e4",
+      "title": "The Duel",
+      "description": "Tybalt confronts Romeo in the street. When Romeo refuses to fight, Mercutio steps in and is killed. Romeo takes revenge and slays Tybalt.",
+      "timeId": "t4",
+      "locationId": "square",
+      "participations": [
+        { "entryOrder": 1, "participantId": "romeo",    "role": "PROTAGONIST" },
+        { "entryOrder": 2, "participantId": "mercutio", "role": "HELPER"      },
+        { "entryOrder": 3, "participantId": "tybalt",   "role": "ANTAGONIST"  },
+        { "entryOrder": 4, "participantId": "benvolio", "role": "WITNESS"     }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "tybalt",   "toParticipantId": "romeo",    "action": "challenges",   "description": "Tybalt demands satisfaction for the feast intrusion.",    "sentiment": "NEGATIVE" },
+        { "temporalOrder": 2, "fromParticipantId": "tybalt",   "toParticipantId": "mercutio", "action": "kills",        "description": "Tybalt mortally wounds Mercutio under Romeo's arm.",    "sentiment": "NEGATIVE" },
+        { "temporalOrder": 3, "fromParticipantId": "romeo",    "toParticipantId": "tybalt",   "action": "kills",        "description": "Romeo, enraged by Mercutio's death, slays Tybalt.",  "sentiment": "NEGATIVE" },
+        { "temporalOrder": 4, "fromParticipantId": "benvolio", "toParticipantId": "romeo",    "action": "urges flight", "description": "Benvolio tells Romeo to flee before the Prince arrives.", "sentiment": "NEUTRAL"  }
+      ]
+    },
+    {
+      "id": "e5",
+      "title": "The Banishment",
+      "description": "Romeo hides in Friar Lawrence's cell. The Prince decrees exile. The Nurse brings word from Juliet. Friar devises a plan.",
+      "timeId": "t5",
+      "locationId": "friar_cell",
+      "participations": [
+        { "entryOrder": 1, "participantId": "romeo", "role": "PROTAGONIST" },
+        { "entryOrder": 2, "participantId": "friar", "role": "MENTOR"      },
+        { "entryOrder": 3, "participantId": "nurse", "role": "HELPER"      }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "nurse", "toParticipantId": "romeo", "action": "informs",  "description": "The Nurse delivers Juliet's ring and news of her grief.",                      "sentiment": "NEUTRAL"  },
+        { "temporalOrder": 2, "fromParticipantId": "friar", "toParticipantId": "romeo", "action": "counsels", "description": "Friar urges Romeo to go to Juliet, then leave for Mantua and await a pardon.", "sentiment": "POSITIVE" }
+      ]
+    },
+    {
+      "id": "e6",
+      "title": "The Farewell",
+      "description": "Romeo and Juliet spend their wedding night together. At dawn Romeo must flee to Mantua. They part not knowing if they will ever meet again.",
+      "timeId": "t6",
+      "locationId": "balcony",
+      "participations": [
+        { "entryOrder": 1, "participantId": "romeo",  "role": "PROTAGONIST" },
+        { "entryOrder": 2, "participantId": "juliet", "role": "PROTAGONIST" },
+        { "entryOrder": 3, "participantId": "nurse",  "role": "HELPER"      }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "romeo", "toParticipantId": "juliet", "action": "bids farewell", "description": "Romeo and Juliet part at dawn, each fearing it is their last meeting.", "sentiment": "NEGATIVE" },
+        { "temporalOrder": 2, "fromParticipantId": "nurse", "toParticipantId": "juliet", "action": "warns",         "description": "The Nurse alerts Juliet that Lady Capulet is approaching.",          "sentiment": "NEUTRAL"  }
+      ]
+    },
+    {
+      "id": "e7",
+      "title": "The Forced Betrothal",
+      "description": "Lord Capulet, unaware Juliet is already married, arranges her wedding to Count Paris. Juliet refuses and is threatened with disownment.",
+      "timeId": "t7",
+      "locationId": "capulet_hall",
+      "participations": [
+        { "entryOrder": 1, "participantId": "juliet",  "role": "PROTAGONIST" },
+        { "entryOrder": 2, "participantId": "capulet", "role": "ANTAGONIST"  },
+        { "entryOrder": 3, "participantId": "paris",   "role": "FOIL"        },
+        { "entryOrder": 4, "participantId": "nurse",   "role": "HELPER"      }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "capulet", "toParticipantId": "juliet", "action": "commands", "description": "Capulet orders Juliet to marry Paris, threatening disownment if she refuses.", "sentiment": "NEGATIVE" },
+        { "temporalOrder": 2, "fromParticipantId": "paris",   "toParticipantId": "juliet", "action": "courts",   "description": "Paris presses his suit, unaware of Juliet's secret marriage.",              "sentiment": "POSITIVE" },
+        { "temporalOrder": 3, "fromParticipantId": "nurse",   "toParticipantId": "juliet", "action": "advises",  "description": "The Nurse advises Juliet to forget Romeo and accept Paris.",                "sentiment": "NEUTRAL"  }
+      ]
+    },
+    {
+      "id": "e8",
+      "title": "The Potion",
+      "description": "Juliet goes to Friar Lawrence in desperation. He gives her a sleeping draught that will make her appear dead for 42 hours.",
+      "timeId": "t8",
+      "locationId": "friar_cell",
+      "participations": [
+        { "entryOrder": 1, "participantId": "juliet", "role": "PROTAGONIST" },
+        { "entryOrder": 2, "participantId": "friar",  "role": "MENTOR"      }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "friar",  "toParticipantId": "juliet", "action": "gives potion", "description": "Friar Lawrence hands Juliet the sleeping draught and explains his plan.",    "sentiment": "NEUTRAL"  },
+        { "temporalOrder": 2, "fromParticipantId": "juliet", "toParticipantId": "friar",  "action": "trusts",       "description": "Juliet, alone and desperate, places herself entirely in the Friar's hands.", "sentiment": "POSITIVE" }
+      ]
+    },
+    {
+      "id": "e9",
+      "title": "Juliet Found Dead",
+      "description": "The Nurse finds Juliet lifeless on the morning of her wedding to Paris. The household mourns, unaware she is only sleeping.",
+      "timeId": "t9",
+      "locationId": "capulet_hall",
+      "participations": [
+        { "entryOrder": 1, "participantId": "juliet",  "role": "PROTAGONIST", "presenceType": "PASSIVE"  },
+        { "entryOrder": 2, "participantId": "capulet", "role": "FOIL"                                    },
+        { "entryOrder": 3, "participantId": "nurse",   "role": "HELPER"                                  },
+        { "entryOrder": 4, "participantId": "paris",   "role": "FOIL"                                    }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "nurse",   "toParticipantId": "capulet", "action": "discovers", "description": "The Nurse finds Juliet and raises the alarm through the house.",    "sentiment": "NEGATIVE" },
+        { "temporalOrder": 2, "fromParticipantId": "paris",   "toParticipantId": "juliet",  "action": "mourns",    "description": "Paris laments the loss of his bride on their wedding morning.", "sentiment": "NEGATIVE" },
+        { "temporalOrder": 3, "fromParticipantId": "capulet", "toParticipantId": "juliet",  "action": "mourns",    "description": "Lord Capulet is devastated by his daughter's apparent death.",  "sentiment": "NEGATIVE" }
+      ]
+    },
+    {
+      "id": "e10",
+      "title": "The Tomb",
+      "description": "Romeo arrives having heard only that Juliet is dead. He kills Paris at the tomb entrance, drinks poison beside Juliet, and dies. She wakes moments too late and takes her own life.",
+      "timeId": "t10",
+      "locationId": "tomb",
+      "participations": [
+        { "entryOrder": 1, "participantId": "romeo",  "role": "PROTAGONIST" },
+        { "entryOrder": 2, "participantId": "juliet", "role": "PROTAGONIST" },
+        { "entryOrder": 3, "participantId": "paris",  "role": "FOIL"        },
+        { "entryOrder": 4, "participantId": "friar",  "role": "MENTOR"      }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "paris",  "toParticipantId": "romeo",  "action": "confronts",     "description": "Paris tries to arrest Romeo for Tybalt's murder.",                    "sentiment": "NEGATIVE" },
+        { "temporalOrder": 2, "fromParticipantId": "romeo",  "toParticipantId": "paris",  "action": "kills",         "description": "Romeo slays Paris in the struggle at the tomb entrance.",           "sentiment": "NEGATIVE" },
+        { "temporalOrder": 3, "fromParticipantId": "romeo",  "toParticipantId": "juliet", "action": "takes poison",  "description": "Romeo drinks poison beside Juliet, believing her dead.",            "sentiment": "NEGATIVE" },
+        { "temporalOrder": 4, "fromParticipantId": "friar",  "toParticipantId": "juliet", "action": "urges flight",  "description": "Friar arrives too late and urges Juliet to flee. She refuses.",     "sentiment": "NEUTRAL"  },
+        { "temporalOrder": 5, "fromParticipantId": "juliet", "toParticipantId": "romeo",  "action": "takes her life","description": "Juliet wakes to find Romeo dead and kills herself with his dagger.", "sentiment": "NEGATIVE" }
+      ]
+    },
+    {
+      "id": "e11",
+      "title": "The Reckoning",
+      "description": "The Prince summons both families to the tomb. Friar Lawrence confesses everything. The Montagues and Capulets, shamed by the cost of their feud, make peace.",
+      "timeId": "t11",
+      "locationId": "tomb",
+      "participations": [
+        { "entryOrder": 1, "participantId": "friar",    "role": "MENTOR"   },
+        { "entryOrder": 2, "participantId": "capulet",  "role": "FOIL"     },
+        { "entryOrder": 3, "participantId": "benvolio", "role": "WITNESS"  },
+        { "entryOrder": 4, "participantId": "prince",   "role": "MENTOR"   }
+      ],
+      "interactions": [
+        { "temporalOrder": 1, "fromParticipantId": "friar",  "toParticipantId": "prince",  "action": "confesses", "description": "Friar Lawrence reveals the secret marriage and his role in the plan.",       "sentiment": "NEUTRAL"  },
+        { "temporalOrder": 2, "fromParticipantId": "prince", "toParticipantId": "capulet", "action": "condemns",  "description": "The Prince holds the feuding families responsible for the tragedy.", "sentiment": "NEGATIVE" }
+      ]
+    }
+  ]
+}
