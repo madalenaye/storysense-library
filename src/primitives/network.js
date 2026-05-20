@@ -206,7 +206,7 @@ export function network(opts = {}) {
           d3.select(this).select('circle')
             .transition().duration(120)
             .attr('stroke-width', 3)
-            .style('filter', 'drop-shadow(0 0 10px rgba(99,102,241,0.5))');
+            .style('filter', 'drop-shadow(0 0 10px rgba(23,37,84,0.35))');
           if (labelSels) {
             labelSels.filter(ld => ld === d).transition().duration(120).style('opacity', 1);
           }

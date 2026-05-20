@@ -388,7 +388,8 @@ const STORIES = [
   { label: 'The Ashford Affair',     file: new URL('../../stories/ashford-affair.json',          import.meta.url).href },
 ];
 
-let currentStory = null;
+let currentStory       = null;
+let currentCustomStory = null;
 let apis = [];
 
 // Timeline-based cards: wide and short
@@ -461,7 +462,8 @@ function renderAll() {
   // ── Network ──────────────────────────────────────────────────────────────────
   make('#c-network', { aspectRatio: SQ },
     tooltip(),
-    network({ r: 20, labels: true })
+    network({ r: 20, labels: true }),
+    edges({ strokeWidth: 2, opacity: 0.45, arrow: false, curvature: 30, global: true })
   );
 
   // ── Locations ────────────────────────────────────────────────────────────────
@@ -497,7 +499,7 @@ function loadJSON(file) {
   reader.onload = ev => {
     try {
       const raw = JSON.parse(ev.target.result);
-      currentStory = normalizeNarrative(raw);
+      currentCustomStory = currentStory = normalizeNarrative(raw);
       const sel = document.getElementById('story-select');
       let opt = sel.querySelector('[value="__custom__"]');
       if (!opt) { opt = document.createElement('option'); opt.value = '__custom__'; sel.appendChild(opt); }
@@ -521,7 +523,10 @@ STORIES.forEach((s, i) => {
 });
 
 sel.addEventListener('change', () => {
-  if (sel.value === '__custom__') return;
+  if (sel.value === '__custom__') {
+    if (currentCustomStory) { currentStory = currentCustomStory; renderAll(); }
+    return;
+  }
   const s = STORIES[+sel.value];
   if (s) loadBuiltIn(s.file, s.label);
 });

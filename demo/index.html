@@ -169,7 +169,6 @@
 <div id="chart"></div>
 <div class="error-msg" id="error-msg"></div>
 
-<footer>Built with storysense · primitives composed freely · no framework</footer>
 
 <script type="module">
 import {
@@ -187,9 +186,10 @@ const STORIES = [
 ];
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let currentStory = null;
-let currentView  = 'storyline';
-let currentApi   = null;  // track last chart instance to destroy its ResizeObserver
+let currentStory       = null;
+let currentCustomStory = null;  // retained so the custom dropdown entry stays usable
+let currentView        = 'storyline';
+let currentApi         = null;  // track last chart instance to destroy its ResizeObserver
 
 const PAD = { top: 20, right: 20, bottom: 20, left: 20 };
 const AR  = 860 / 460;   // aspect ratio — keeps proportions as width changes
@@ -229,7 +229,7 @@ function render() {
         storysense('#chart', currentStory, { ...base })
           .add(tooltip())
           .add(network({ r: 24, labels: true }))
-          .add(edges({ strokeWidth: 2.2, opacity: 0.5, arrow: false, curvature: 35 }))
+          .add(edges({ strokeWidth: 2.2, opacity: 0.5, arrow: false, curvature: 35, global: true }))
           .render(),
 
       locations: () =>
@@ -269,7 +269,7 @@ function loadJSON(file) {
   reader.onload = e => {
     try {
       const raw = JSON.parse(e.target.result);
-      currentStory = normalizeNarrative(raw);
+      currentCustomStory = currentStory = normalizeNarrative(raw);
       document.getElementById('story-title').textContent = currentStory.title ?? file.name;
       // Mark select as "custom" so it doesn't mislead
       const sel = document.getElementById('story-select');
@@ -302,7 +302,10 @@ STORIES.forEach((s, i) => {
 
 sel.addEventListener('change', () => {
   const idx = sel.value;
-  if (idx === '__custom__') return;
+  if (idx === '__custom__') {
+    if (currentCustomStory) { currentStory = currentCustomStory; render(); }
+    return;
+  }
   const s = STORIES[+idx];
   if (s) loadBuiltIn(s.file, s.label);
 });

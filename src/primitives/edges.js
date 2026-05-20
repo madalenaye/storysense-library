@@ -60,6 +60,7 @@ export function edges(opts = {}) {
     nodeRadius  = 0,
     dedupe      = false,
     filter      = null,
+    global      = false,  // group by pair direction across ALL events (use with network())
   } = opts;
 
   return {
@@ -124,7 +125,8 @@ export function edges(opts = {}) {
 
           const line = { x1, y1, x2, y2, offsetIndex: 0, ix, event, ei, fromId, toId, nrSrc, nrTgt };
           lines.push(line);
-          (byDir[`${fromId}|${toId}|${ei}`] ??= []).push(line);
+          const dirKey = global ? `${fromId}|${toId}` : `${fromId}|${toId}|${ei}`;
+          (byDir[dirKey] ??= []).push(line);
         });
       });
 
@@ -132,8 +134,10 @@ export function edges(opts = {}) {
       // When A→B and B→A both exist, each curves to its own side (their left normals
       // point in opposite directions, so the arcs naturally bow apart from each other).
       lines.forEach(line => {
-        const sameDir     = byDir[`${line.fromId}|${line.toId}|${line.ei}`] ?? [];
-        const opposDir    = byDir[`${line.toId}|${line.fromId}|${line.ei}`] ?? [];
+        const dk          = global ? `${line.fromId}|${line.toId}` : `${line.fromId}|${line.toId}|${line.ei}`;
+        const ok          = global ? `${line.toId}|${line.fromId}` : `${line.toId}|${line.fromId}|${line.ei}`;
+        const sameDir     = byDir[dk] ?? [];
+        const opposDir    = byDir[ok] ?? [];
         const hasOpposing = opposDir.length > 0;
         const idx         = sameDir.indexOf(line);
         const total       = sameDir.length;

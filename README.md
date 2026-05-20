@@ -235,6 +235,7 @@ Curved arrows between participants for each interaction. Opposing edges (A to B 
 | `opacity` | `0.6` | Opacity |
 | `arrow` | `true` | Show arrowhead |
 | `curvature` | `30` | Arc strength for parallel edges |
+| `global` | `false` | Group interactions across all events instead of per-event. Use with `network()`. |
 
 ### network(opts)
 
