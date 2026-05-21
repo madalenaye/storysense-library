@@ -44,7 +44,11 @@ export function characters(opts = {}) {
   } = opts;
 
   return {
-    id:       'characters',
+    id:          'characters',
+    _layout:     layout,
+    _side:       side,
+    _r:          r,
+    _laneSpacing: laneSpacing,
     needs:    ['sceneX', 'sceneY', 'direction'],
     provides: ['charPos', 'charRadius'],
 
@@ -60,9 +64,6 @@ export function characters(opts = {}) {
         ? (iconUrl ?? (p => dicebearUrl(p, { style: iconStyle })))
         : null;
 
-      ctx.set('charRadius', r);
-
-      // Build presence lookup: participantId → Set of eventIndices
       const present = new Map();
       data.events.forEach((event, ei) => {
         event.participantIds.forEach(pid => {
@@ -76,38 +77,55 @@ export function characters(opts = {}) {
       let forceSim      = null;
       let tickListeners = null;
 
-      // ── Auto-fit lane spacing so all participants stay within the SVG bounds ─
-      let effectiveSpacing = laneSpacing;
-      if (layout === 'lane' && data.participants.length > 1) {
+      // axisClearance reserves px so nodes never clip timeline tick labels.
+      // Horizontal labels sit ~26 px below the axis   → 28 px on side:'below'/'both'.
+      // Vertical labels use text-anchor:end at axisX-10; a label like "Act 1, Scene 1"
+      // can be ~75 px wide, so reserve 80 px on the left (side:'above'/'both').
+      const axisClearance =
+        direction === 'x' && side === 'above'                      ? 36 :
+        direction === 'x' && (side === 'below' || side === 'both') ? 28 :
+        direction === 'y' && (side === 'above' || side === 'both') ? 80 : 0;
+
+      let effectiveR   = r;
+      let slotSize     = laneSpacing;  // fallback for force layout
+      let effectivePad = 0;
+      if (layout === 'lane' && data.participants.length > 0) {
         const nSide = side === 'both'
           ? Math.ceil(data.participants.length / 2)
           : data.participants.length;
         const { width: W, height: H, padding: pad } = ctx.opts;
+
         let avail;
         if (direction === 'x') {
           const axisY = sceneY(0);
           avail = side === 'below'
             ? (H - (pad?.bottom ?? 0)) - axisY
-            : axisY - (pad?.top ?? 0);
+            : side === 'above'
+              ? axisY - (pad?.top ?? 0)
+              : Math.min(axisY - (pad?.top ?? 0), (H - (pad?.bottom ?? 0)) - axisY);
         } else {
           const axisX = sceneX(0);
           avail = side === 'above'
             ? axisX - (pad?.left ?? 0)
-            : (W - (pad?.right ?? 0)) - axisX;
+            : side === 'below'
+              ? (W - (pad?.right ?? 0)) - axisX
+              : Math.min(axisX - (pad?.left ?? 0), (W - (pad?.right ?? 0)) - axisX);
         }
-        // Outermost node centre must stay r px from the boundary:
-        // r*2 + spacing/2 + (nSide-1)*spacing + r <= avail
-        // spacing * (nSide - 0.5) <= avail - r*3
-        const maxSpacing = (avail - r * 3) / Math.max(nSide - 0.5, 1);
-        effectiveSpacing = Math.min(laneSpacing, Math.max(r * 1.5, maxSpacing));
-      }
 
-      // ── Lane layout ─────────────────────────────────────────────────────────
+        const safeAvail = avail - axisClearance - 4;
+        const rawSlot   = safeAvail / (nSide + 1);
+        // Cap at laneSpacing — don't spread nodes further than the user asked for.
+        slotSize   = rawSlot > laneSpacing ? laneSpacing : Math.max(8, rawSlot);
+        effectiveR = Math.min(r, Math.max(4, Math.floor(slotSize / 2) - 2));
+        effectivePad = Math.max(0, Math.floor((safeAvail - slotSize * (nSide + 1)) / 2));
+      }
+      ctx.set('charRadius', effectiveR);
+
       if (layout === 'lane') {
         data.participants.forEach((participant, idx) => {
           const sign    = side === 'below' ? 1 : side === 'both' ? (idx % 2 === 0 ? -1 : 1) : -1;
           const laneNum = side === 'both' ? Math.floor(idx / 2) : idx;
-          const offset  = sign * (r * 2 + effectiveSpacing / 2 + laneNum * effectiveSpacing);
+          const offset  = sign * (axisClearance + effectivePad + slotSize * (laneNum + 1));
 
           data.events.forEach((_, ei) => {
             const x = direction === 'x' ? sceneX(ei) : sceneX(ei) + offset;
@@ -116,7 +134,6 @@ export function characters(opts = {}) {
           });
         });
 
-      // ── Force layout ─────────────────────────────────────────────────────────
       } else {
         forceNodeMap  = {};
         tickListeners = [];
@@ -179,14 +196,12 @@ export function characters(opts = {}) {
 
       ctx.set('charPos', (pid, ei) => posMap[pid]?.[ei] ?? null);
 
-      // ── SVG setup ────────────────────────────────────────────────────────────
       const svg     = ctx.get('svg');
       const svgNode = svg.node();
       const defs    = svg.select('defs').empty()
         ? svg.insert('defs', ':first-child')
         : svg.select('defs');
 
-      // ── Draw nodes ────────────────────────────────────────────────────────────
       Object.entries(posMap).forEach(([pid, eventPositions]) => {
         const participant = data.participantById.get(pid);
         if (!participant) return;
@@ -203,12 +218,12 @@ export function characters(opts = {}) {
             .style('cursor', forceNode ? 'grab' : onClick ? 'pointer' : 'default');
 
           g.append('circle')
-            .attr('r', r)
+            .attr('r', effectiveR)
             .attr('fill', resolvedColor(participant))
             .attr('stroke', '#fff').attr('stroke-width', 2)
             .style('filter', 'drop-shadow(0 1px 4px rgba(0,0,0,0.20))');
 
-          if (resolvedIconFn) appendIcon(g, participant, r, defs, resolvedIconFn);
+          if (resolvedIconFn) appendIcon(g, participant, effectiveR, defs, resolvedIconFn);
 
           if (onClick) g.on('click', () => onClick(participant, +ei));
 
@@ -227,7 +242,6 @@ export function characters(opts = {}) {
         });
       });
 
-      // ── Force mode: drag + live tick ──────────────────────────────────────────
       if (layout === 'force' && forceSim) {
         const forceGroups = layer.selectAll('.ss-char-force');
 
@@ -267,14 +281,12 @@ export function characters(opts = {}) {
         forceSim.restart();
       }
 
-      // ── Name labels (lane mode) ───────────────────────────────────────────────
       if (labels && layout === 'lane') {
         const lblLayer    = ctx.get('layer')('labels');
         const { padding } = ctx.opts;
 
         if (direction === 'x') {
-          // Horizontal: labels to the left of the first tick, vertically centred on each lane.
-          const labelX   = sceneX(0) - r - 8;
+          const labelX   = sceneX(0) - effectiveR - 8;
           const availW   = labelX - ((padding?.left) ?? 0) - 4;
           const maxChars = Math.max(3, Math.floor(availW / 7));
 
@@ -294,14 +306,13 @@ export function characters(opts = {}) {
               .text(label);
           });
         } else {
-          // Vertical: rotated column headers above the first tick row.
           // Anchor is r*2+4 px above the first node centre so text clears the node.
           data.participants.forEach(participant => {
             const evPositions = posMap[participant.id];
             if (!evPositions) return;
             const anyEi   = Object.keys(evPositions)[0];
             const { x }   = evPositions[anyEi];
-            const anchorY = sceneY(0) - r * 2 - 4;
+            const anchorY = sceneY(0) - effectiveR * 2 - 4;
             const avail   = anchorY - ((padding?.top) ?? 0);
             const vMax    = Math.max(3, Math.floor(avail / 7));
             const name    = participant.name;

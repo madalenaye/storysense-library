@@ -22,7 +22,6 @@
  */
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm';
 
-// Quadratic bezier path. offsetIndex=0 → straight line.
 function edgePath(x1, y1, x2, y2, offsetIndex, curvature) {
   const offset = offsetIndex * curvature;
   if (Math.abs(offset) < 0.5) return `M${x1},${y1}L${x2},${y2}`;
@@ -82,7 +81,6 @@ export function edges(opts = {}) {
         return charRadiusCtx ?? 0;
       };
 
-      // Arrow marker
       if (arrow) {
         let defs = svg.select('defs');
         if (defs.empty()) defs = svg.insert('defs', ':first-child');
@@ -103,7 +101,7 @@ export function edges(opts = {}) {
 
       const seen   = new Set();
       const lines  = [];
-      const byDir  = {};   // `fromId|toId|ei` → lines in that direction
+      const byDir  = {};
 
       data.events.forEach((event, ei) => {
         event.interactions.forEach(ix => {
@@ -202,7 +200,6 @@ export function edges(opts = {}) {
           ctx.get('tooltip')?.hide();
         });
 
-      // Live tick updates (force/drag mode)
       const tickListeners = ctx.get('tickListeners');
       if (tickListeners) {
         const updatePaths = sel => {

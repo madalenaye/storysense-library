@@ -37,7 +37,6 @@ export function lifelines(opts = {}) {
       const layer    = ctx.get('layer')('paths');
       const { data } = ctx;
 
-      // Build O(1) presence lookup: participantId → Set of eventIndices
       const present = new Map();
       data.events.forEach((event, ei) => {
         event.participantIds.forEach(pid => {
@@ -78,7 +77,6 @@ export function lifelines(opts = {}) {
           segments.push({ pid: participant.id, fromEi: ei - 1, toEi: ei, el: seg });
         });
 
-        // Highlight the whole lifeline on hover
         layer.selectAll(`.${className}`)
           .on('mouseover', function() {
             d3.selectAll(`.${className}`)

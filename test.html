@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body  { font-family: system-ui, sans-serif; margin: 0; padding: 20px; background: #f3f4f6; }
+    h1    { font-size: 13px; font-weight: 700; color: #111827; margin: 0 0 20px; letter-spacing: .03em; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .card { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+    .card h2 { font-size: 10px; font-weight: 600; color: #9ca3af; margin: 0 0 8px; text-transform: uppercase; letter-spacing: .07em; }
+    .err  { font-size: 11px; color: #ef4444; padding: 6px 0; }
+  </style>
+</head>
+<body>
+<h1>All primitive combinations</h1>
+<div class="grid" id="grid"></div>
+
+<script type="module">
+import SS from '/src/index.js';
+
+const raw   = await fetch('/stories/little-red-riding-hood.json').then(r => r.json());
+const story = SS.normalizeNarrative(raw);
+
+const LAND = 860 / 460;   // landscape  — horizontal timeline
+const PORT = 460 / 860;   // portrait   — vertical timeline
+
+const cases = [
+
+  {
+    label: 'x · lane above · lifelines',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: LAND })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'x' }))
+      .add(SS.characters({ layout: 'lane', side: 'above', r: 12, labels: true }))
+      .add(SS.lifelines())
+      .render(),
+  },
+  {
+    label: 'x · lane below · lifelines',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: LAND })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'x' }))
+      .add(SS.characters({ layout: 'lane', side: 'below', r: 12, labels: true }))
+      .add(SS.lifelines())
+      .render(),
+  },
+  {
+    label: 'x · lane both · lifelines',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: LAND })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'x' }))
+      .add(SS.characters({ layout: 'lane', side: 'both', r: 10, labels: true }))
+      .add(SS.lifelines())
+      .render(),
+  },
+
+  {
+    label: 'x · lane above · lifelines · events',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: LAND })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'x' }))
+      .add(SS.characters({ layout: 'lane', side: 'above', r: 12, labels: true }))
+      .add(SS.lifelines())
+      .add(SS.events())
+      .render(),
+  },
+  {
+    label: 'x · lane above · lifelines · edges',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: LAND })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'x' }))
+      .add(SS.characters({ layout: 'lane', side: 'above', r: 12, labels: true }))
+      .add(SS.lifelines())
+      .add(SS.edges())
+      .render(),
+  },
+  {
+    label: 'x · lane below · lifelines · edges',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: LAND })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'x' }))
+      .add(SS.characters({ layout: 'lane', side: 'below', r: 12, labels: true }))
+      .add(SS.lifelines())
+      .add(SS.edges())
+      .render(),
+  },
+  {
+    label: 'x · lane above · lifelines · events · edges  [full horizontal]',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: LAND })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'x' }))
+      .add(SS.characters({ layout: 'lane', side: 'above', r: 12, labels: true }))
+      .add(SS.lifelines())
+      .add(SS.events())
+      .add(SS.edges())
+      .render(),
+  },
+
+  {
+    label: 'x · force · edges',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: LAND })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'x' }))
+      .add(SS.characters({ layout: 'force', side: 'above', r: 12 }))
+      .add(SS.edges())
+      .render(),
+  },
+
+  // ── timeline only (no characters) ────────────────────────────────────────
+  {
+    label: 'x · events only  (no characters)',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: LAND })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'x' }))
+      .add(SS.events())
+      .render(),
+  },
+
+  {
+    label: 'y · lane above (left) · lifelines',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: PORT })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'y' }))
+      .add(SS.characters({ layout: 'lane', side: 'above', r: 12, labels: true }))
+      .add(SS.lifelines())
+      .render(),
+  },
+  {
+    label: 'y · lane below (right) · lifelines',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: PORT })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'y' }))
+      .add(SS.characters({ layout: 'lane', side: 'below', r: 12, labels: true }))
+      .add(SS.lifelines())
+      .render(),
+  },
+  {
+    label: 'y · lane both · lifelines',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: PORT })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'y' }))
+      .add(SS.characters({ layout: 'lane', side: 'both', r: 10, labels: true }))
+      .add(SS.lifelines())
+      .render(),
+  },
+  {
+    label: 'y · lane above · lifelines · events',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: PORT })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'y' }))
+      .add(SS.characters({ layout: 'lane', side: 'above', r: 12, labels: true }))
+      .add(SS.lifelines())
+      .add(SS.events())
+      .render(),
+  },
+  {
+    label: 'y · lane above · lifelines · edges',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: PORT })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'y' }))
+      .add(SS.characters({ layout: 'lane', side: 'above', r: 12, labels: true }))
+      .add(SS.lifelines())
+      .add(SS.edges())
+      .render(),
+  },
+  {
+    label: 'y · lane above · lifelines · events · edges  [full vertical]',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: PORT })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'y' }))
+      .add(SS.characters({ layout: 'lane', side: 'above', r: 12, labels: true }))
+      .add(SS.lifelines())
+      .add(SS.events())
+      .add(SS.edges())
+      .render(),
+  },
+
+  {
+    label: 'network  (standalone — participants sized by importance)',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: LAND })
+      .add(SS.tooltip())
+      .add(SS.network({ r: 16, labels: true }))
+      .render(),
+  },
+  {
+    label: 'network · edges  (interaction edges on the force graph)',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: LAND })
+      .add(SS.tooltip())
+      .add(SS.network({ r: 16, labels: true }))
+      .add(SS.edges())
+      .render(),
+  },
+
+  {
+    label: 'locations · movement  (location map — drag nodes to rearrange)',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: LAND })
+      .add(SS.tooltip())
+      .add(SS.locations({ r: 28, labels: true }))
+      .add(SS.movement({ arrow: true }))
+      .render(),
+  },
+
+  {
+    label: 'x · lane above · lifelines · showLocations',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: LAND })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'x', showLocations: true }))
+      .add(SS.characters({ layout: 'lane', side: 'above', r: 12, labels: true }))
+      .add(SS.lifelines())
+      .render(),
+  },
+  {
+    label: 'x · lane above · lifelines · events · showLocations',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: LAND })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'x', showLocations: true }))
+      .add(SS.characters({ layout: 'lane', side: 'above', r: 12, labels: true }))
+      .add(SS.lifelines())
+      .add(SS.events())
+      .render(),
+  },
+  {
+    label: 'y · lane above · lifelines · showLocations',
+    build: el => SS.storysense(el, story, { responsive: true, aspectRatio: PORT })
+      .add(SS.tooltip())
+      .add(SS.timeline({ direction: 'y', showLocations: true }))
+      .add(SS.characters({ layout: 'lane', side: 'above', r: 12, labels: true }))
+      .add(SS.lifelines())
+      .render(),
+  },
+];
+
+const grid = document.getElementById('grid');
+
+cases.forEach(({ label, build }) => {
+  const card = document.createElement('div');
+  card.className = 'card';
+  card.innerHTML = `<h2>${label}</h2>`;
+  const el = document.createElement('div');
+  card.appendChild(el);
+  grid.appendChild(card);
+  try {
+    build(el);
+  } catch (e) {
+    el.innerHTML = `<div class="err">Error: ${e.message}</div>`;
+    console.error(label, e);
+  }
+});
+</script>
+</body>
+</html>

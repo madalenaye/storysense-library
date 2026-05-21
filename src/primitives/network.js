@@ -58,7 +58,6 @@ export function network(opts = {}) {
       const tickListeners = [];
       ctx.set('tickListeners', tickListeners);
 
-      // Importance: ratio of events each participant appears in
       const appearanceCount = new Map();
       data.events.forEach(event => {
         event.participantIds.forEach(pid => {
@@ -67,7 +66,6 @@ export function network(opts = {}) {
       });
       const eventCount = data.events.length || 1;
 
-      // Per-participant radius scaled by importance [0.65 → 1.35]
       const nodeRadius = new Map();
       data.participants.forEach(p => {
         const importance = (appearanceCount.get(p.id) ?? 0) / eventCount;
@@ -94,7 +92,6 @@ export function network(opts = {}) {
         };
       });
 
-      // One structural link per unique participant pair
       const seenLinks   = new Set();
       const links       = [];
       const nodeDegrees = {};
@@ -111,7 +108,6 @@ export function network(opts = {}) {
         });
       });
 
-      // Live position store
       const posById = {};
       nodes.forEach(n => { posById[n.id] = { x: n.x, y: n.y }; });
       ctx.set('charPos', pid => posById[pid] ?? null);
@@ -152,7 +148,6 @@ export function network(opts = {}) {
         ? svg.insert('defs', ':first-child')
         : svg.select('defs');
 
-      // ── Draw nodes ────────────────────────────────────────────────────────────
       const nodeGroups = layer.selectAll('g.ss-net-node').data(nodes, d => d.id)
         .join('g')
         .attr('class', 'ss-net-node')
@@ -171,7 +166,6 @@ export function network(opts = {}) {
         });
       }
 
-      // ── Labels — shown only on hover ──────────────────────────────────────────
       let labelSels = null;
       if (labels) {
         const lblLayer = ctx.get('layer')('labels');
@@ -190,7 +184,6 @@ export function network(opts = {}) {
           .text(d => d.participant.name);
       }
 
-      // Interaction count for tooltip
       const interactionCounts = {};
       data.events.forEach(event => {
         event.interactions.forEach(ix => {
@@ -237,7 +230,6 @@ export function network(opts = {}) {
         nodeGroups.on('click', (_, d) => onClick(d.participant));
       }
 
-      // ── Drag ──────────────────────────────────────────────────────────────────
       const drag = d3.drag()
         .on('start', (event, d) => {
           if (!event.active) sim.alphaTarget(0.3).restart();
@@ -256,7 +248,6 @@ export function network(opts = {}) {
 
       nodeGroups.call(drag);
 
-      // ── Tick ──────────────────────────────────────────────────────────────────
       sim.on('tick', () => {
         nodes.forEach(n => {
           if (n.fx == null) {

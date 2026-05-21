@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Storysense — Primitives</title>
+  <title>Primitives</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -14,7 +14,6 @@
       padding: 36px 28px 72px;
     }
 
-    /* ── Page header ────────────────────────────────────────────────────────── */
     .page-header {
       display: flex;
       align-items: flex-start;
@@ -52,7 +51,6 @@
     }
     .upload-btn:hover { border-color: #172554; color: #172554; }
 
-    /* ── Section title ──────────────────────────────────────────────────────── */
     .section-title {
       font-size: 0.68rem; font-weight: 700;
       text-transform: uppercase; letter-spacing: 0.09em;
@@ -60,7 +58,6 @@
     }
     .section-title:first-of-type { margin-top: 0; }
 
-    /* ── Cards ──────────────────────────────────────────────────────────────── */
     .card {
       background: #fff;
       border: 1px solid #e5e7eb;
@@ -114,7 +111,6 @@
     .card-body { padding: 10px; }
     .card-body > div { width: 100%; }
 
-    /* ── Side-by-side cards ─────────────────────────────────────────────────── */
     .card-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -127,7 +123,6 @@
       .card-row { grid-template-columns: 1fr; }
     }
 
-    /* ── Error ──────────────────────────────────────────────────────────────── */
     .error-banner {
       display: none;
       padding: 10px 16px;
@@ -160,10 +155,8 @@
 
 <div class="error-banner" id="error-banner"></div>
 
-<!-- ════════════════════════════════════════════════════════════════════════════ -->
 <p class="section-title">Axis &amp; Time</p>
 
-<!-- timeline() -->
 <div class="card">
   <div class="card-head">
     <div>
@@ -184,7 +177,27 @@
   <div class="card-body"><div id="c-timeline"></div></div>
 </div>
 
-<!-- events() -->
+<div class="card">
+  <div class="card-head">
+    <div>
+      <div class="prim-badge">timeline()</div>
+      <div class="prim-subtitle">showLocations: true</div>
+    </div>
+    <div class="prim-info">
+      <div class="prim-desc">
+        Colour-codes each segment of the axis by the event's location and labels every run.
+        Labels are staggered across up to three rows so they don't overlap.
+        Requires locations in the story data.
+      </div>
+      <div class="chips">
+        <span class="chip chip-needs">needs: nothing</span>
+        <span class="chip chip-gives">gives: sceneX · sceneY · direction</span>
+      </div>
+    </div>
+  </div>
+  <div class="card-body"><div id="c-timeline-loc"></div></div>
+</div>
+
 <div class="card">
   <div class="card-head">
     <div>
@@ -206,12 +219,11 @@
   <div class="card-body"><div id="c-events"></div></div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════════════════════════ -->
+
 <p class="section-title">Character Layout</p>
 
 <div class="card-row">
 
-  <!-- characters() lane -->
   <div class="card">
     <div class="card-head">
       <div>
@@ -233,7 +245,6 @@
     <div class="card-body"><div id="c-char-lane"></div></div>
   </div>
 
-  <!-- characters() force -->
   <div class="card">
     <div class="card-head">
       <div>
@@ -257,7 +268,6 @@
 
 </div>
 
-<!-- lifelines() -->
 <div class="card">
   <div class="card-head">
     <div>
@@ -278,7 +288,6 @@
   <div class="card-body"><div id="c-lifelines"></div></div>
 </div>
 
-<!-- edges() -->
 <div class="card">
   <div class="card-head">
     <div>
@@ -300,10 +309,8 @@
   <div class="card-body"><div id="c-edges"></div></div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════════════════════════ -->
 <p class="section-title">Global Network</p>
 
-<!-- network() -->
 <div class="card">
   <div class="card-head">
     <div>
@@ -324,12 +331,10 @@
   <div class="card-body"><div id="c-network"></div></div>
 </div>
 
-<!-- ════════════════════════════════════════════════════════════════════════════ -->
 <p class="section-title">Locations &amp; Movement</p>
 
 <div class="card-row">
 
-  <!-- locations() -->
   <div class="card">
     <div class="card-head">
       <div>
@@ -350,7 +355,6 @@
     <div class="card-body"><div id="c-locations"></div></div>
   </div>
 
-  <!-- movement() -->
   <div class="card">
     <div class="card-head">
       <div>
@@ -392,9 +396,7 @@ let currentStory       = null;
 let currentCustomStory = null;
 let apis = [];
 
-// Timeline-based cards: wide and short
 const TALL = 860 / 320;
-// Standalone cards: wide enough that the force sim doesn't leave dead space
 const SQ   = 860 / 420;
 
 const PAD  = { top: 16, right: 16, bottom: 16, left: 16 };
@@ -420,10 +422,14 @@ function renderAll() {
     }
   }
 
-  // ── Axis & Time ─────────────────────────────────────────────────────────────
   make('#c-timeline', { aspectRatio: TALL, axisRatio: 0.5 },
     tooltip(),
     timeline({ direction: 'x', stroke: '#c7d2fe', tickRadius: 5, labels: true })
+  );
+
+  make('#c-timeline-loc', { aspectRatio: TALL, axisRatio: 0.5 },
+    tooltip(),
+    timeline({ direction: 'x', showLocations: true })
   );
 
   make('#c-events', { aspectRatio: TALL, axisRatio: 0.5 },
@@ -432,7 +438,6 @@ function renderAll() {
     events({ shape: 'dot', r: 6, fill: '#172554', titles: true })
   );
 
-  // ── Characters ──────────────────────────────────────────────────────────────
   make('#c-char-lane', { aspectRatio: TALL, axisRatio: 0.72 },
     tooltip(),
     timeline({ direction: 'x', stroke: '#e5e7eb', tickRadius: 4 }),
@@ -459,14 +464,12 @@ function renderAll() {
     edges({ strokeWidth: 1.5, opacity: 0.7, arrow: true, curvature: 28})
   );
 
-  // ── Network ──────────────────────────────────────────────────────────────────
   make('#c-network', { aspectRatio: SQ },
     tooltip(),
     network({ r: 20, labels: true }),
     edges({ strokeWidth: 2, opacity: 0.45, arrow: false, curvature: 30, global: true })
   );
 
-  // ── Locations ────────────────────────────────────────────────────────────────
   make('#c-locations', { aspectRatio: SQ },
     tooltip(),
     locations({ r: 28, labels: true })
@@ -479,7 +482,6 @@ function renderAll() {
   );
 }
 
-// ── Story selector ────────────────────────────────────────────────────────────
 async function loadBuiltIn(file, label) {
   try {
     const res = await fetch(file);

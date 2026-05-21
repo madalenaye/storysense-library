@@ -41,7 +41,6 @@ export function locations(opts = {}) {
       const lblLayer          = ctx.get('layer')('labels');
       const svg               = ctx.get('svg');
 
-      // Only include locations that are actually referenced by events
       const visitedIds = new Set(data.events.map(e => e.location?.id).filter(Boolean));
       const locs = data.locations.filter(l => visitedIds.has(l.id));
 
@@ -65,7 +64,6 @@ export function locations(opts = {}) {
 
       ctx.set('locPos', locId => pos[locId] ?? null);
 
-      // Which events visit each location, in narrative order
       const eventsByLoc = {};
       data.events.forEach((event, ei) => {
         const locId = event.location?.id;
@@ -96,7 +94,6 @@ export function locations(opts = {}) {
 
       const maxEi = data.events.length - 1;
 
-      // ── Draw nodes ────────────────────────────────────────────────────────────
       locs.forEach(loc => {
         const { x, y }    = pos[loc.id];
         const locEvents   = eventsByLoc[loc.id] ?? [];
@@ -125,7 +122,6 @@ export function locations(opts = {}) {
             .text(loc.name ?? loc.id);
         }
 
-        // Visit dot tray
         if (locEvents.length) {
           g.append('rect')
             .attr('x', startX - dotR - 4).attr('y', dotY - dotR - 3)
@@ -147,7 +143,6 @@ export function locations(opts = {}) {
         }
       });
 
-      // ── Drag ─────────────────────────────────────────────────────────────────
       const locGroups = layer.selectAll('g').filter(d => d && d.id && pos[d.id]);
 
       const drag = d3.drag()

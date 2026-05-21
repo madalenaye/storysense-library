@@ -48,7 +48,6 @@ export function events(opts = {}) {
         const y   = sceneY(i);
         const col = typeof fill === 'function' ? fill(event, i) : fill;
 
-        // ── Marker ─────────────────────────────────────────────────────────────
         let markerEl;
 
         if (shape === 'pin') {
@@ -68,15 +67,10 @@ export function events(opts = {}) {
 
         if (onClick) markerEl.style('cursor', 'pointer').on('click', () => onClick(event, i));
 
-        // ── Title label alongside the axis ────────────────────────────────────
-        // Labels use rotate(35°) text-anchor:end so they descend left-to-right,
-        // ending just above each dot — the mirror of the timeline's time labels
-        // which ascend at -35° below the axis.  Both converge from the left.
         if (titles && event.title) {
           const label = event.title.length > 22 ? event.title.slice(0, 20) + '…' : event.title;
 
           if (direction === 'y') {
-            // Vertical axis: label to the right, angled slightly down
             lblLayer.append('text')
               .attr('transform', `translate(${x + r + 10},${y}) rotate(35)`)
               .attr('text-anchor', 'start')
@@ -84,7 +78,6 @@ export function events(opts = {}) {
               .attr('stroke', '#fff').attr('stroke-width', 3).attr('paint-order', 'stroke')
               .text(label);
           } else {
-            // Horizontal axis: centered above the dot, no rotation
             lblLayer.append('text')
               .attr('x', x).attr('y', y - r - 8)
               .attr('text-anchor', 'middle')
@@ -94,8 +87,6 @@ export function events(opts = {}) {
           }
         }
 
-        // ── Tooltip ───────────────────────────────────────────────────────────
-        // Bound in the forEach closure so each marker captures its own event.
         if (tt) {
           const participantNames = (event.participations ?? [])
             .map(p => p.participant?.name)

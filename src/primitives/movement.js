@@ -40,7 +40,6 @@ export function movement(opts = {}) {
       const { data }  = ctx;
       const svgNode   = ctx.get('svg').node();
 
-      // Collect (eventIndex, locationId) pairs in narrative order
       const visits = data.events
         .map((event, ei) => ({ ei, locId: event.location?.id ?? null }))
         .filter(v => v.locId);
