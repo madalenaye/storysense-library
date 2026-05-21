@@ -48,8 +48,8 @@ SS.storysense('#chart', story, { responsive: true, aspectRatio: 860/460 })
 `aspectRatio` controls the shape of the chart as `width / height`. Two presets cover most cases:
 
 ```js
-const LANDSCAPE = 860 / 460;  // ~1.87 — wide, good for horizontal timelines (direction: 'x')
-const PORTRAIT  = 460 / 860;  // ~0.54 — tall, good for vertical timelines  (direction: 'y')
+const LANDSCAPE = 860 / 460;  // wide, good for horizontal timelines (direction: 'x')
+const PORTRAIT  = 460 / 860;  // tall, good for vertical timelines  (direction: 'y')
 ```
 
 Use `responsive: true` together with `aspectRatio` so the chart fills its container and scales on resize without distorting. If you need a fixed size instead, pass `width` and `height` directly and omit both `responsive` and `aspectRatio`.
@@ -347,15 +347,16 @@ A primitive is a plain object with four properties. No class, no registration, n
 
 ```js
 const highlights = {
-  id:       'highlights',
-  needs:    ['sceneX', 'sceneY'],
-  provides: [],
+  id:       'highlights',           // unique name, used in error messages
+  needs:    ['sceneX', 'sceneY'],   // must be added after timeline()
+  provides: [],                     // this primitive gives nothing to later ones
 
   render(ctx) {
-    const layer  = ctx.get('layer')('overlay');
-    const sceneX = ctx.get('sceneX');
-    const sceneY = ctx.get('sceneY');
+    const layer  = ctx.get('layer')('overlay');  // draw on top of everything
+    const sceneX = ctx.get('sceneX');            // fn(eventIndex) → x px
+    const sceneY = ctx.get('sceneY');            // fn(eventIndex) → y px
 
+    // Draw a gold halo on any event that has "highlight": true in the JSON
     ctx.data.events.forEach((event, i) => {
       if (!event.highlight) return;
       layer.append('circle')
@@ -368,8 +369,14 @@ const highlights = {
 SS.storysense('#chart', story, opts)
   .add(SS.tooltip())
   .add(SS.timeline())
-  .add(highlights)   // plain object, no ()
+  .add(highlights)   // already an object — no ()
   .render();
+```
+
+In your story JSON, mark whichever events you want highlighted:
+
+```json
+{ "id": "e3", "title": "The Encounter", "highlight": true, ... }
 ```
 
 Showing a tooltip from a custom primitive:
