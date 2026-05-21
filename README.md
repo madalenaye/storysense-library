@@ -1,4 +1,4 @@
-# storysense
+# Storysense Library
 
 Compose narrative visualizations from small, focused pieces. No framework or build step required.
 
@@ -425,6 +425,6 @@ python3 -m http.server 3000
 npx serve .
 ```
 
-Then open `http://localhost:3000/test.html` to see all primitive combinations side by side.
+You can open `http://localhost:3000/test.html` to see all primitive combinations side by side.
 
 Sample stories are in `stories/`. The schema is in `narrative.schema.json`.
