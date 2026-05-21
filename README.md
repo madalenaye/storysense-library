@@ -125,7 +125,13 @@ Stories are plain JSON. The full schema is in `narrative.schema.json`. Below are
 
 `entryOrder` and `temporalOrder` are integers that set the order of participations and interactions within an event. They do not need to be consecutive.
 
-Always pass raw JSON through `normalizeNarrative()` before rendering — it resolves all ID references and builds the internal maps each primitive depends on.
+The order of events in the visualization is controlled by `story.eventIds`, not by the order of the `events` array. This lets you define events in any order in the file and sequence them separately in the story.
+
+Always pass raw JSON through `normalizeNarrative()` before rendering. It does three things that the primitives depend on:
+
+- **Resolves ID references** — `locationId: "forest"` becomes `location: { id: "forest", name: "The Forest", ... }`, and the same for `timeId`, `participantId`, `fromParticipantId`, and `toParticipantId`. Primitives always work with the resolved objects, never raw ID strings.
+- **Sorts by story order** — events are reordered to match `story.eventIds`; participations within each event are sorted by `entryOrder`; interactions by `temporalOrder`.
+- **Assigns a stable color palette** — each participant gets a consistent color from the Tableau 10 palette based on their index in the `participants` array. Primitives call `data.colorOf(participantId)` to read it.
 
 ---
 
@@ -344,6 +350,8 @@ Draws Bezier arcs between locations in narrative order, showing how the story mo
 ## Writing your own primitive
 
 A primitive is a plain object with four properties. No class, no registration, no build step.
+
+`ctx` is the shared context passed to every primitive's `render` function. Use `ctx.get(key)` to read values set by earlier primitives, `ctx.set(key, value)` to publish values for later ones, and `ctx.data` to access the normalized story (the output of `normalizeNarrative()`).
 
 ```js
 const highlights = {
