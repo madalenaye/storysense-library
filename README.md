@@ -1,10 +1,36 @@
-# StorySense Library
+# StorySense
 
-Compose narrative visualizations from small, focused pieces. No framework or build step required.
+A small JavaScript library for composing narrative visualizations from focused, single-purpose pieces. No framework and build step.
 
-## Import
+```js
+SS.storysense('#chart', story)
+  .add(SS.tooltip())
+  .add(SS.timeline())
+  .add(SS.characters())
+  .add(SS.lifelines())
+  .render();
+```
 
-**From CDN** (no download needed, requires an internet connection):
+## Contents
+
+1. [Install](#install)
+2. [Quick start](#quick-start)
+3. [Your data](#your-data)
+4. [Sizing the chart](#sizing-the-chart)
+5. [Chart options](#chart-options)
+6. [Primitives](#primitives)
+   - [Foundation](#foundation): `tooltip`, `timeline`
+   - [On the timeline](#on-the-timeline): `events`, `characters`, `lifelines`, `edges`
+   - [Standalone views](#standalone-views): `network`, `locations`, `movement`
+7. [Custom primitives](#custom-primitives)
+8. [Reference](#reference)
+9. [Local development](#local-development)
+
+## Install
+
+Two ways to load the library. Both pull D3 in automatically.
+
+**From a CDN** (requires an internet connection):
 
 ```js
 import SS from 'https://cdn.jsdelivr.net/gh/madalenaye/storysense-library@main/src/index.js';
@@ -16,49 +42,44 @@ import SS from 'https://cdn.jsdelivr.net/gh/madalenaye/storysense-library@main/s
 import SS from './storysense-library/src/index.js';
 ```
 
-Named imports work too:
+Named imports also work:
 
 ```js
 import { storysense, normalizeNarrative, tooltip, timeline }
   from 'https://cdn.jsdelivr.net/gh/madalenaye/storysense-library@main/src/index.js';
 ```
 
-D3 loads automatically from CDN either way.
-
----
-
 ## Quick start
 
+A minimal chart with a horizontal timeline, character lanes, and lifelines:
+
 ```js
+// 1. Load a story and normalize it. Always do this before rendering.
 const raw   = await fetch('./story.json').then(r => r.json());
 const story = SS.normalizeNarrative(raw);
 
+// 2. Create a chart bound to a container element.
+//    `responsive` re-renders on resize. `aspectRatio` is width / height.
 SS.storysense('#chart', story, { responsive: true, aspectRatio: 860/460 })
-  .add(SS.tooltip())
-  .add(SS.timeline({ direction: 'x' }))
-  .add(SS.characters({ layout: 'lane', side: 'above', r: 14, labels: true }))
-  .add(SS.lifelines())
+  // 3. Stack primitives in draw order. Each one declares what it needs;
+  //    you'll get a clear error if you add them out of order.
+  .add(SS.tooltip())                                                          // hover popups
+  .add(SS.timeline({ direction: 'x' }))                                       // time axis
+  .add(SS.characters({ layout: 'lane', side: 'above', r: 14, labels: true })) // one avatar per appearance
+  .add(SS.lifelines())                                                        // line through each character's nodes
   .render();
 ```
 
----
+What happens at each step:
 
-## Aspect ratio
-
-`aspectRatio` controls the shape of the chart as `width / height`. Two presets cover most cases:
-
-```js
-const LANDSCAPE = 860 / 460;  // wide, good for horizontal timelines (direction: 'x')
-const PORTRAIT  = 460 / 860;  // tall, good for vertical timelines  (direction: 'y')
-```
-
-Use `responsive: true` together with `aspectRatio` so the chart fills its container and scales on resize without distorting. If you need a fixed size instead, pass `width` and `height` directly and omit both `responsive` and `aspectRatio`.
-
----
+1. **Normalize:** `normalizeNarrative(raw)` resolves the id references in your JSON, orders events by `story.eventIds`, and assigns each participant a stable colour. See [Your data](#your-data).
+2. **Create:** `storysense(container, story, opts)` builds the chart.
+3. **Compose:** Each `.add(...)` stacks a primitive. Order matters because primitives depend on values published by earlier ones.
+4. **Render:** `.render()` draws everything.
 
 ## Your data
 
-Stories are plain JSON. The full schema is in `narrative.schema.json`. Below are the required fields for each type.
+Stories are plain JSON. The full schema lives in `narrative.schema.json`. Here is a small example with all the required fields:
 
 ```json
 {
@@ -69,7 +90,7 @@ Stories are plain JSON. The full schema is in `narrative.schema.json`. Below are
   },
   "participants": [
     { "id": "red",  "name": "Red Riding Hood", "domain": "INDIVIDUAL" },
-    { "id": "wolf", "name": "The Wolf",         "domain": "INDIVIDUAL" }
+    { "id": "wolf", "name": "The Wolf",        "domain": "INDIVIDUAL" }
   ],
   "locations": [
     { "id": "forest", "name": "The Forest", "type": "PHYSICAL" }
@@ -112,9 +133,9 @@ Stories are plain JSON. The full schema is in `narrative.schema.json`. Below are
 }
 ```
 
-**Field reference**
+### Field values
 
-| Field | Values |
+| Field | Allowed values |
 |---|---|
 | `participant.domain` | `INDIVIDUAL`, `SET`, `OBJECT` |
 | `location.type` | `PHYSICAL`, `TRANSITIONAL`, `VIRTUAL`, `METAPHYSICAL` |
@@ -123,35 +144,52 @@ Stories are plain JSON. The full schema is in `narrative.schema.json`. Below are
 | `participation.presenceType` | `ACTIVE`, `PASSIVE`, `MENTIONED` (optional) |
 | `interaction.sentiment` | `POSITIVE`, `NEGATIVE`, `NEUTRAL` (optional) |
 
-`entryOrder` and `temporalOrder` are integers that set the order of participations and interactions within an event. They do not need to be consecutive.
+### Two ordering rules
 
-The order of events in the visualization is controlled by `story.eventIds`, not by the order of the `events` array. This lets you define events in any order in the file and sequence them separately in the story.
+- `entryOrder` and `temporalOrder` are integers that sort participations and interactions inside an event. They do not need to be consecutive.
+- The visualization order of events comes from `story.eventIds`, not from the order of the `events` array. You can define events in any order and sequence them separately.
 
-Always pass raw JSON through `normalizeNarrative()` before rendering. It does three things that the primitives depend on:
+### Why `normalizeNarrative()` is required
 
-- **Resolves ID references** — `locationId: "forest"` becomes `location: { id: "forest", name: "The Forest", ... }`, and the same for `timeId`, `participantId`, `fromParticipantId`, and `toParticipantId`. Primitives always work with the resolved objects, never raw ID strings.
-- **Sorts by story order** — events are reordered to match `story.eventIds`; participations within each event are sorted by `entryOrder`; interactions by `temporalOrder`.
-- **Assigns a stable color palette** — each participant gets a consistent color from the Tableau 10 palette based on their index in the `participants` array. Primitives call `data.colorOf(participantId)` to read it.
+Always pass raw JSON through `normalizeNarrative()` before rendering. It does three things the primitives depend on:
 
----
+1. **Resolves id references.** `locationId: "forest"` becomes `location: { id: "forest", name: "The Forest", ... }`. The same applies to `timeId`, `participantId`, `fromParticipantId`, and `toParticipantId`. Primitives work with resolved objects, never raw ids.
+2. **Sorts by story order.** Events follow `story.eventIds`. Participations sort by `entryOrder`. Interactions sort by `temporalOrder`.
+3. **Assigns a colour palette.** Each participant gets a stable colour from Tableau 10, based on its index in `participants`. Primitives read it via `data.colorOf(participantId)`.
 
-## storysense(container, story, opts)
+## Sizing the chart
 
-| Option | Default | Description |
+`aspectRatio` controls the chart shape as `width / height`. Two presets cover most cases:
+
+```js
+const LANDSCAPE = 860 / 460;  // wide, pairs with direction: 'x'
+const PORTRAIT  = 460 / 860;  // tall, pairs with direction: 'y'
+```
+
+Use `responsive: true` together with `aspectRatio` so the chart fills its container and scales on resize without distorting.
+
+For a fixed-size chart, pass `width` and `height` directly and omit both `responsive` and `aspectRatio`.
+
+## Chart options
+
+`storysense(container, story, opts)`
+
+| Option | Default | What it does |
 |---|---|---|
 | `responsive` | `false` | Re-renders when the container resizes |
-| `aspectRatio` | none | Width-to-height ratio, e.g. `860/460` for landscape |
-| `width` / `height` | `null` / `500` | Fixed size in px (use instead of `aspectRatio` for static charts) |
+| `aspectRatio` | none | Width-to-height ratio, e.g. `860/460` |
+| `width` | `null` | Fixed width in px (use together with `height`) |
+| `height` | `500` | Fixed height in px |
 | `padding` | `{top,right,bottom,left: 0}` | Inner whitespace in px |
-| `axisRatio` | auto | Fractional position of the time axis (0 = top/left edge, 1 = bottom/right edge). Auto-computed from participant count and `characters()` settings — only set this manually if you need to override the default. |
+| `axisRatio` | auto | Fractional position of the time axis. `0` = top/left edge, `1` = bottom/right edge. Computed from participant count and `characters()` settings. Set manually only to override. |
 
 Call `api.destroy()` to clean up the `ResizeObserver` when removing the chart from the DOM.
 
----
-
 ## Primitives
 
-Each primitive declares what it `needs` from context and what it `provides` to later primitives. Add them in order — a primitive that needs something not yet provided will throw a clear error.
+A primitive is a small object that draws one type of mark. Each one declares what it `needs` from earlier primitives, and what it `provides` to later ones. If a primitive needs something that hasn't been added yet, `render()` throws a clear error.
+
+### Dependency overview
 
 ```
 tooltip()      provides: tooltip
@@ -166,106 +204,102 @@ locations()    provides: locPos, locDotPos
   movement()     needs: locPos
 ```
 
----
+### Foundation
 
-### tooltip()
+#### `tooltip()`
 
-Add this first. All other primitives detect its presence and show tooltips on hover automatically — nothing else to configure.
+Add this first. Every other primitive detects its presence and shows tooltips on hover automatically. No configuration.
 
 ```js
 .add(SS.tooltip())
 ```
 
----
+#### `timeline(opts)`
 
-### timeline(opts)
-
-Draws the time axis with one tick per event. This is the foundation for `events()`, `characters()`, `lifelines()`, and `edges()`.
+Draws the time axis with one tick per event. Foundation for `events()`, `characters()`, `lifelines()`, and `edges()`.
 
 ```js
 .add(SS.timeline({ direction: 'x' }))
 ```
 
-| Option | Default | Description |
+| Option | Default | What it does |
 |---|---|---|
-| `direction` | `'x'` | `'x'` for a horizontal axis, `'y'` for a vertical one |
+| `direction` | `'x'` | `'x'` for horizontal, `'y'` for vertical |
 | `margin` | `80` | Space in px before the first tick and after the last |
 | `stroke` | `'#d1d5db'` | Axis line and tick colour |
-| `tickRadius` | `2` | Tick dot radius. Set to `0` to hide ticks. |
+| `tickRadius` | `2` | Tick dot radius. `0` hides ticks. |
 | `times` | `true` | Show the time label for each event |
-| `labelSide` | `'below'` | Which side of the axis the time labels appear on: `'below'` or `'above'` |
-| `showLocations` | `false` | Colour-code axis segments by event location and label each run. Requires locations in the story data. |
+| `labelSide` | `'below'` | Side of the axis for time labels: `'below'` or `'above'` |
+| `showLocations` | `false` | Colour-code axis segments by event location and label each run. Requires `locations` in the data. |
 
-When `showLocations` is `true`, each segment of the axis between location changes is coloured and labelled. Labels are placed on the opposite side from `labelSide` and staggered across up to three rows so they don't overlap.
+When `showLocations` is `true`, each segment between location changes is coloured. Labels sit on the opposite side from `labelSide` and stagger across up to three rows so they don't overlap.
 
----
+### On the timeline
 
-### events(opts)
+These primitives all build on `timeline()`.
 
-Places a marker on the axis at each event position. Hover shows the event title, time, and description.
+#### `events(opts)`
+
+Places a marker at each event's position on the axis. Hover shows the event title, time, and description.
 
 ```js
 .add(SS.events({ shape: 'dot', r: 5 }))
 ```
 
-| Option | Default | Description |
+| Option | Default | What it does |
 |---|---|---|
 | `shape` | `'dot'` | `'dot'` or `'pin'` |
 | `r` | `6` | Marker radius in px |
-| `fill` | `'#6366f1'` | Colour, or `fn(event, index) => colour` |
+| `fill` | `'#6366f1'` | Colour string, or `fn(event, index) => colour` |
 | `titles` | `false` | Show the event title next to each marker |
 | `onClick` | `null` | `fn(event, index)` called on click |
 
----
+#### `characters(opts)`
 
-### characters(opts)
+Draws one avatar node per participant, per event they appear in.
 
-Draws one avatar node per participant per event they appear in. Two layout modes:
+Two layout modes:
 
-- **`lane`** — each participant occupies a fixed parallel track. Clean and predictable; pairs naturally with `lifelines()`.
-- **`force`** — participants cluster around each event position via a D3 force simulation. Nodes are draggable.
+- **`lane`**: each participant occupies a fixed parallel track. Clean and predictable. Pairs naturally with `lifelines()`.
+- **`force`**: participants cluster around each event position via a D3 force simulation. Nodes are draggable.
 
 ```js
 .add(SS.characters({ layout: 'lane', side: 'above', r: 14, labels: true }))
 ```
 
-| Option | Default | Description |
+| Option | Default | What it does |
 |---|---|---|
 | `layout` | `'lane'` | `'lane'` or `'force'` |
-| `r` | `16` | Node radius in px. Automatically reduced if there isn't enough space. |
-| `laneSpacing` | `38` | Target gap between lane centres in px (lane only). Reduced automatically if needed. |
-| `side` | `'above'` | Where character lanes sit relative to the axis: `'above'`, `'below'`, or `'both'` (alternates above and below) |
+| `r` | `16` | Node radius in px. Reduced automatically if space is tight. |
+| `laneSpacing` | `38` | Gap between lane centres in px (lane only). Reduced automatically if needed. |
+| `side` | `'above'` | Where lanes sit relative to the axis: `'above'`, `'below'`, `'both'` (alternates) |
 | `color` | palette | `fn(participant) => colour` |
 | `icons` | `true` | Show avatar images (fetched from DiceBear) |
 | `iconStyle` | `'notionists'` | Any [DiceBear](https://www.dicebear.com/styles/) style slug |
-| `iconUrl` | `null` | `fn(participant) => imageURL` — overrides `iconStyle` when provided |
+| `iconUrl` | `null` | `fn(participant) => imageURL`. Overrides `iconStyle` when set. |
 | `labels` | `true` | Show participant name labels (lane mode only) |
 | `onClick` | `null` | `fn(participant, eventIndex)` called on click |
 | `perpDistance` | `70` | Force only: target distance above/below the axis in px |
 | `axisStrength` | `0.9` | Force only: how tightly nodes snap to their event's axis position. Lower = more spread. |
 
-The `axisRatio` (where the axis sits in the chart) is **automatically calculated** from the participant count, `laneSpacing`, and `side`. You rarely need to set it yourself.
+`axisRatio` (where the axis sits) is calculated automatically from the participant count, `laneSpacing`, and `side`. You rarely need to set it yourself.
 
----
+#### `lifelines(opts)`
 
-### lifelines(opts)
-
-Connects each participant's nodes with a continuous line through all events. Gaps where a participant is absent are shown as dashes.
+Connects each participant's nodes with a continuous line through all events. Gaps where a participant is absent appear as dashes.
 
 ```js
 .add(SS.lifelines({ strokeWidth: 2, opacity: 0.6 }))
 ```
 
-| Option | Default | Description |
+| Option | Default | What it does |
 |---|---|---|
 | `stroke` | palette | `fn(participant) => colour` |
 | `strokeWidth` | `1.5` | Line width in px |
 | `opacity` | `0.4` | Line opacity |
 | `dash` | `'4,4'` | SVG dash pattern for absent segments |
 
----
-
-### edges(opts)
+#### `edges(opts)`
 
 Draws curved arrows between participants for each interaction in an event. When two participants interact in both directions, the arcs curve to opposite sides automatically.
 
@@ -273,7 +307,7 @@ Draws curved arrows between participants for each interaction in an event. When 
 .add(SS.edges({ arrow: true, curvature: 28 }))
 ```
 
-| Option | Default | Description |
+| Option | Default | What it does |
 |---|---|---|
 | `stroke` | `'#666'` | Arc colour |
 | `strokeWidth` | `2` | Width in px |
@@ -282,18 +316,20 @@ Draws curved arrows between participants for each interaction in an event. When 
 | `curvature` | `30` | How strongly opposing arcs bend away from each other |
 | `global` | `false` | Aggregate interactions across all events instead of per-event. Useful with `network()`. |
 
----
+### Standalone views
 
-### network(opts)
+These primitives stand on their own and do not need `timeline()`.
 
-Places all participants in a force-directed layout with no timeline. Node size scales with how many events each participant appears in — more appearances, larger node. Nodes are draggable. Pair with `edges({ global: true })` to show interactions.
+#### `network(opts)`
+
+Places all participants in a force-directed layout. No time axis. Node size scales with how many events each participant appears in (more appearances, larger node). Nodes are draggable. Pair with `edges({ global: true })` to show interactions.
 
 ```js
 .add(SS.network({ r: 20, labels: true }))
 .add(SS.edges({ global: true, arrow: false }))
 ```
 
-| Option | Default | Description |
+| Option | Default | What it does |
 |---|---|---|
 | `r` | `18` | Base radius in px (scaled per participant by appearance count) |
 | `color` | palette | `fn(participant) => colour` |
@@ -305,20 +341,16 @@ Places all participants in a force-directed layout with no timeline. Node size s
 | `linkDist` | `100` | Target distance between connected nodes |
 | `onClick` | `null` | `fn(participant)` called on click |
 
----
+#### `locations(opts)`
 
-### locations(opts)
-
-Draws one node per location that appears in at least one event, arranged in a draggable circular layout. Each node shows a small dot per event held at that location. Drag nodes to rearrange the map — `movement()` paths update live.
-
-This is a **standalone** visualization. It works on its own or with `movement()`, but does not connect to `timeline()`.
+Draws one node per location that appears in at least one event, arranged in a draggable circular layout. Each node shows a small dot per event held there. Drag a node to rearrange the map; `movement()` paths update live.
 
 ```js
 .add(SS.locations({ r: 30, labels: true }))
 .add(SS.movement({ arrow: true }))
 ```
 
-| Option | Default | Description |
+| Option | Default | What it does |
 |---|---|---|
 | `r` | `28` | Node radius in px |
 | `fill` | `'#fef9ee'` | Node background colour |
@@ -327,9 +359,7 @@ This is a **standalone** visualization. It works on its own or with `movement()`
 | `margin` | `80` | Edge gap for the automatic circle layout |
 | `positions` | `null` | Manual layout override: `{ locationId: { x, y }, ... }` |
 
----
-
-### movement(opts)
+#### `movement(opts)`
 
 Draws Bezier arcs between locations in narrative order, showing how the story moves through space. Same-location arcs loop below the node. Hover an arc to see which events it connects. Must be added after `locations()`.
 
@@ -337,34 +367,37 @@ Draws Bezier arcs between locations in narrative order, showing how the story mo
 .add(SS.movement({ arrow: true, curvature: 25 }))
 ```
 
-| Option | Default | Description |
+| Option | Default | What it does |
 |---|---|---|
 | `stroke` | `'#999'` | Arc colour |
 | `strokeWidth` | `2` | Width in px |
 | `opacity` | `0.7` | Arc opacity |
-| `arrow` | `true` | Show direction chevron at the arc midpoint |
+| `arrow` | `true` | Show a direction chevron at the arc midpoint |
 | `curvature` | `25` | How strongly arcs bend. Higher = more pronounced curve. |
 
----
-
-## Writing your own primitive
+## Custom primitives
 
 A primitive is a plain object with four properties. No class, no registration, no build step.
 
-`ctx` is the shared context passed to every primitive's `render` function. Use `ctx.get(key)` to read values set by earlier primitives, `ctx.set(key, value)` to publish values for later ones, and `ctx.data` to access the normalized story (the output of `normalizeNarrative()`).
+`ctx` is the shared context passed to every primitive's `render` function:
+
+- `ctx.get(key)` reads a value set by an earlier primitive.
+- `ctx.set(key, value)` publishes a value for later primitives.
+- `ctx.data` is the normalized story (the output of `normalizeNarrative()`).
+
+Example: a gold halo on any event flagged with `"highlight": true` in the JSON.
 
 ```js
 const highlights = {
   id:       'highlights',           // unique name, used in error messages
   needs:    ['sceneX', 'sceneY'],   // must be added after timeline()
-  provides: [],                     // this primitive gives nothing to later ones
+  provides: [],                     // gives nothing to later primitives
 
   render(ctx) {
     const layer  = ctx.get('layer')('overlay');  // draw on top of everything
-    const sceneX = ctx.get('sceneX');            // fn(eventIndex) → x px
-    const sceneY = ctx.get('sceneY');            // fn(eventIndex) → y px
+    const sceneX = ctx.get('sceneX');            // fn(eventIndex) -> x px
+    const sceneY = ctx.get('sceneY');            // fn(eventIndex) -> y px
 
-    // Draw a gold halo on any event that has "highlight": true in the JSON
     ctx.data.events.forEach((event, i) => {
       if (!event.highlight) return;
       layer.append('circle')
@@ -377,7 +410,7 @@ const highlights = {
 SS.storysense('#chart', story, opts)
   .add(SS.tooltip())
   .add(SS.timeline())
-  .add(highlights)   // already an object — no ()
+  .add(highlights)   // already an object, no parentheses
   .render();
 ```
 
@@ -387,7 +420,7 @@ In your story JSON, mark whichever events you want highlighted:
 { "id": "e3", "title": "The Encounter", "highlight": true, ... }
 ```
 
-Showing a tooltip from a custom primitive:
+### Showing a tooltip from a custom primitive
 
 ```js
 render(ctx) {
@@ -404,28 +437,30 @@ render(ctx) {
 }
 ```
 
----
+## Reference
 
-## Context reference
+### Context keys
 
 | Key | Type | Set by |
 |---|---|---|
 | `svg` | D3 `<svg>` selection | core |
-| `layer` | `fn(name) → D3 <g>` | core |
+| `layer` | `fn(name) -> D3 <g>` | core |
 | `tooltip` | `{ show(x, y, html), hide() }` | `tooltip()` |
-| `sceneX` | `fn(eventIndex) → px` | `timeline()` |
-| `sceneY` | `fn(eventIndex) → px` | `timeline()` |
+| `sceneX` | `fn(eventIndex) -> px` | `timeline()` |
+| `sceneY` | `fn(eventIndex) -> px` | `timeline()` |
 | `direction` | `'x'` or `'y'` | `timeline()` |
-| `charPos` | `fn(participantId, eventIndex) → {x, y}` | `characters()` or `network()` |
+| `charPos` | `fn(participantId, eventIndex) -> {x, y}` | `characters()` or `network()` |
 | `charRadius` | `number` | `characters()` or `network()` |
-| `locPos` | `fn(locationId) → {x, y}` | `locations()` |
-| `locDotPos` | `fn(eventIndex) → {x, y}` | `locations()` |
+| `locPos` | `fn(locationId) -> {x, y}` | `locations()` |
+| `locDotPos` | `fn(eventIndex) -> {x, y}` | `locations()` |
 
-Layer draw order, back to front: `background`, `paths`, `edges`, `nodes`, `pins`, `labels`, `overlay`.
+### Layer order
 
----
+Drawn back to front: `background`, `paths`, `edges`, `nodes`, `pins`, `labels`, `overlay`.
 
-## Running locally
+## Local development
+
+Serve the folder over HTTP. Any static server works:
 
 ```bash
 python3 -m http.server 3000
@@ -433,6 +468,8 @@ python3 -m http.server 3000
 npx serve .
 ```
 
-You can open `http://localhost:3000/test.html` to see all primitive combinations side by side.
+Then:
 
-Sample stories are in `stories/`. The schema is in `narrative.schema.json`.
+- `http://localhost:3000/test.html` shows every primitive combination side by side.
+- Sample stories live in `stories/`.
+- The schema is in `narrative.schema.json`.
