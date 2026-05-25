@@ -44,7 +44,6 @@ export function locations(opts = {}) {
       const visitedIds = new Set(data.events.map(e => e.location?.id).filter(Boolean));
       const locs = data.locations.filter(l => visitedIds.has(l.id));
 
-      // Mutable position store — locPos and locDotPos always read from this live
       const pos = {};
       locs.forEach((loc, i) => {
         if (positions?.[loc.id]) {
@@ -88,7 +87,6 @@ export function locations(opts = {}) {
         return { x: p.x + dotCx, y: p.y + dotY };
       });
 
-      // Tick-listener registry for movement()
       const tickListeners = [];
       ctx.set('tickListeners', tickListeners);
 

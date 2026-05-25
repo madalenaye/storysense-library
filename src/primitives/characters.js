@@ -33,10 +33,10 @@ export function characters(opts = {}) {
     r             = 16,
     laneSpacing   = 38,
     side          = 'above',
-    color         = null,   // null → use data.colorOf
+    color         = null,   
     icons         = true,
     iconStyle     = 'notionists',
-    iconUrl       = null,   // fn(participant) → URL; overrides iconStyle
+    iconUrl       = null,   
     labels        = true,
     onClick       = null,
     perpDistance  = 70,    // force mode: how far nodes target above/below axis
@@ -77,17 +77,14 @@ export function characters(opts = {}) {
       let forceSim      = null;
       let tickListeners = null;
 
-      // axisClearance reserves px so nodes never clip timeline tick labels.
-      // Horizontal labels sit ~26 px below the axis   → 28 px on side:'below'/'both'.
-      // Vertical labels use text-anchor:end at axisX-10; a label like "Act 1, Scene 1"
-      // can be ~75 px wide, so reserve 80 px on the left (side:'above'/'both').
+
       const axisClearance =
         direction === 'x' && side === 'above'                      ? 36 :
         direction === 'x' && (side === 'below' || side === 'both') ? 28 :
         direction === 'y' && (side === 'above' || side === 'both') ? 80 : 0;
 
       let effectiveR   = r;
-      let slotSize     = laneSpacing;  // fallback for force layout
+      let slotSize     = laneSpacing;  
       let effectivePad = 0;
       if (layout === 'lane' && data.participants.length > 0) {
         const nSide = side === 'both'
@@ -114,7 +111,7 @@ export function characters(opts = {}) {
 
         const safeAvail = avail - axisClearance - 4;
         const rawSlot   = safeAvail / (nSide + 1);
-        // Cap at laneSpacing — don't spread nodes further than the user asked for.
+       
         slotSize   = rawSlot > laneSpacing ? laneSpacing : Math.max(8, rawSlot);
         effectiveR = Math.min(r, Math.max(4, Math.floor(slotSize / 2) - 2));
         effectivePad = Math.max(0, Math.floor((safeAvail - slotSize * (nSide + 1)) / 2));
@@ -306,7 +303,6 @@ export function characters(opts = {}) {
               .text(label);
           });
         } else {
-          // Anchor is r*2+4 px above the first node centre so text clears the node.
           data.participants.forEach(participant => {
             const evPositions = posMap[participant.id];
             if (!evPositions) return;

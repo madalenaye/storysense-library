@@ -177,32 +177,27 @@ import {
   tooltip, timeline, events, characters, lifelines, edges, locations, movement, network,
 } from '../src/index.js';
 
-// ── Story registry ─────────────────────────────────────────────────────────────
-// import.meta.url gives the URL of this HTML file — guarantees the fetch path
-// is correct regardless of which directory the server is run from.
+
 const STORIES = [
   { label: 'Little Red Riding Hood', file: new URL('../stories/little-red-riding-hood.json', import.meta.url).href },
   { label: 'Romeo & Juliet',         file: new URL('../stories/romeo-and-juliet.json',        import.meta.url).href },
   { label: 'The Ashford Affair',     file: new URL('../stories/ashford-affair.json',          import.meta.url).href },
 ];
 
-// ── State ─────────────────────────────────────────────────────────────────────
 let currentStory       = null;
 let currentCustomStory = null;
 let currentView        = 'storyline';
-let currentApi         = null;  // track last chart instance to destroy its ResizeObserver
+let currentApi         = null;  
 
 const PAD = { top: 20, right: 20, bottom: 20, left: 20 };
-const AR  = 860 / 460;   // aspect ratio — keeps proportions as width changes
+const AR  = 860 / 460;  
 
-// ── Render ────────────────────────────────────────────────────────────────────
 function render() {
   const errEl = document.getElementById('error-msg');
   errEl.style.display = 'none';
 
   if (!currentStory) return;
 
-  // Tear down previous ResizeObserver before creating a new chart
   currentApi?.destroy();
 
   try {
@@ -257,7 +252,6 @@ function render() {
   }
 }
 
-// ── Load a built-in story ─────────────────────────────────────────────────────
 async function loadBuiltIn(file, label) {
   try {
     const res = await fetch(file);
@@ -273,7 +267,6 @@ async function loadBuiltIn(file, label) {
   }
 }
 
-// ── Load a user-provided JSON file ────────────────────────────────────────────
 function loadJSON(file) {
   const reader = new FileReader();
   reader.onload = e => {
@@ -281,7 +274,6 @@ function loadJSON(file) {
       const raw = JSON.parse(e.target.result);
       currentCustomStory = currentStory = normalizeNarrative(raw);
       document.getElementById('story-title').textContent = currentStory.title ?? file.name;
-      // Add/update the custom option in the dropdown
       let custom = sel.querySelector('option[value="__custom__"]');
       if (!custom) {
         custom = document.createElement('option');
@@ -300,7 +292,6 @@ function loadJSON(file) {
   reader.readAsText(file);
 }
 
-// ── Populate dropdown ─────────────────────────────────────────────────────────
 const sel = document.getElementById('story-select');
 STORIES.forEach((s, i) => {
   const opt = document.createElement('option');
@@ -322,10 +313,9 @@ sel.addEventListener('change', () => {
 
 document.getElementById('file-input').addEventListener('change', e => {
   if (e.target.files[0]) loadJSON(e.target.files[0]);
-  e.target.value = ''; // reset so same file can be re-loaded
+  e.target.value = ''; 
 });
 
-// ── View tabs ─────────────────────────────────────────────────────────────────
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
@@ -335,7 +325,6 @@ document.querySelectorAll('.tab').forEach(btn => {
   });
 });
 
-// ── Initial load ──────────────────────────────────────────────────────────────
 loadBuiltIn(STORIES[0].file, STORIES[0].label);
 </script>
 

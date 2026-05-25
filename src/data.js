@@ -14,7 +14,6 @@
 
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm';
 
-// Perceptually distinct, accessible palette (Tableau 10)
 const PALETTE = d3.schemeTableau10;
 
 /**
@@ -39,11 +38,9 @@ export function normalizeNarrative(narrative) {
   const timeById        = new Map(times.map(t => [t.id, t]));
   const rawEventById    = new Map(rawEvents.map(e => [e.id, e]));
 
-  // Deterministic color per participant (by index in the participants array)
   const colorIndex = new Map(participants.map((p, i) => [p.id, i]));
   const colorOf = id => PALETTE[(colorIndex.get(id) ?? 0) % PALETTE.length];
 
-  // Order events by story.eventIds; skip unknown IDs silently
   const storyEventIds = narrative.story.eventIds ?? rawEvents.map(e => e.id);
 
   const events = storyEventIds.flatMap(eid => {
@@ -77,7 +74,6 @@ export function normalizeNarrative(narrative) {
       time:           timeById.get(e.timeId)         ?? null,
       participations,
       interactions,
-      // Quick O(1) presence lookup for primitives
       participantIds: new Set(participations.map(p => p.participantId)),
     }];
   });

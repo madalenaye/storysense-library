@@ -7,7 +7,6 @@
  * Needs:    —
  * Provides: tooltip  — { show(x, y, html), hide() }
  */
-// NO d3 import needed
 export function tooltip(opts = {}) {
   return {
     id:       'tooltip',

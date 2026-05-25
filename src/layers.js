@@ -14,7 +14,6 @@ export function createLayers(svg) {
 
   return function layer(name) {
     if (!map[name]) {
-      // Unknown name falls through to overlay so nothing breaks
       console.warn(`storysense: unknown layer "${name}", using overlay`);
       return map.overlay;
     }

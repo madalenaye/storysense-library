@@ -23,7 +23,6 @@
  */
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm';
 
-// Muted palette for location bands — distinct from the participant palette
 const LOC_PALETTE = [
   '#6366f1', '#f59e0b', '#10b981', '#ef4444',
   '#8b5cf6', '#06b6d4', '#f97316', '#84cc16',
@@ -87,7 +86,6 @@ export function timeline(opts = {}) {
           .attr('stroke', stroke).attr('stroke-width', 1.5)
           .attr('stroke-linecap', 'round');
 
-        // Location bands — drawn after the gray line so they overlay it
         if (showLocations) {
           locRuns.forEach(({ locId, start, end }) => {
             const bx0 = scale(start);
@@ -106,9 +104,8 @@ export function timeline(opts = {}) {
           const rowBaseY = labelSide === 'above'
             ? [axisY + 12, axisY + 23, axisY + 34]
             : [axisY - 12, axisY - 23, axisY - 34];
-          const rowRight = []; // tracks the rightmost X used per row
+          const rowRight = []; 
 
-          // Process left to right so greedy row assignment is stable
           const entries = [...locRuns]
             .map(run => {
               const midX  = (scale(run.start) + scale(run.end)) / 2;
@@ -132,7 +129,7 @@ export function timeline(opts = {}) {
             for (let r = 0; r < rowBaseY.length; r++) {
               if ((rowRight[r] ?? -Infinity) < midX - halfW - 4) { rowIdx = r; break; }
             }
-            if (rowIdx === -1) return; // all rows full — skip label, band still shows
+            if (rowIdx === -1) return; 
             rowRight[rowIdx] = midX + halfW;
 
             const col  = locColor(run.locId);
@@ -201,8 +198,7 @@ export function timeline(opts = {}) {
               .attr('stroke-linecap', 'round');
           });
 
-          // Label every run. Labels go right of the axis; each run has its own
-          // Y so vertical collisions are rare — skip only if the run is zero-height.
+
           locRuns.forEach(({ locId, loc, start, end }) => {
             const by0 = scale(start);
             const by1 = scale(end);

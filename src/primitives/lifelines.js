@@ -21,7 +21,7 @@ import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm';
 
 export function lifelines(opts = {}) {
   const {
-    stroke      = null,   // null → use data.colorOf per participant
+    stroke      = null,  
     strokeWidth = 1.5,
     opacity     = 0.4,
     dash        = '4,4',
@@ -45,7 +45,7 @@ export function lifelines(opts = {}) {
         });
       });
 
-      const segments = []; // for live tick updates
+      const segments = []; 
 
       data.participants.forEach(participant => {
         const col = stroke

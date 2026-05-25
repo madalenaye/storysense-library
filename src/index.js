@@ -90,9 +90,7 @@ export function storysense(container, data, opts = {}) {
     }
     svgSel.attr('viewBox', `0 0 ${w} ${h}`);
 
-    // Auto-compute axisRatio when not user-specified.
-    // Derive from actual participant count + spacing so the axis lands exactly
-    // where the character block needs it — no fixed magic numbers.
+
     let resolvedAxisRatio = opts.axisRatio ?? null;
     if (resolvedAxisRatio == null) {
       const charP = queue.find(p => p.id === 'characters' && p._layout === 'lane');
@@ -102,18 +100,15 @@ export function storysense(container, data, opts = {}) {
         const nSide     = pSide === 'both'
           ? Math.ceil(data.participants.length / 2)
           : data.participants.length;
-        // Mirror the clearance logic in characters.js exactly.
         const tlDir     = queue.find(p => p.id === 'timeline')?._direction ?? 'x';
         const clearance =
           tlDir === 'x' && pSide === 'above'                       ? 36 :
           tlDir === 'x' && (pSide === 'below' || pSide === 'both') ? 28 :
           tlDir === 'y' && (pSide === 'above' || pSide === 'both') ? 80 : 0;
-        // Space needed = one slot per lane + one empty slot each end + clearance.
         const needed  = pSpacing * (nSide + 1) + clearance + 4;
         const spanDim = tlDir === 'y' ? w : h;
         const frac    = needed / spanDim;
-        // Clamp so the axis always sits at ≥ 50 % in the character direction,
-        // giving characters at least half the chart and keeping both sides symmetric.
+
         if (pSide === 'above') {
           resolvedAxisRatio = Math.max(0.5, Math.min(0.85, frac));
         } else if (pSide === 'below') {

@@ -61,7 +61,7 @@ export function appendIcon(g, participant, r, defs, iconUrl) {
     defs.append('clipPath')
       .attr('id', clipId)
       .append('circle')
-      .attr('r', r - 1)   // 1px inset so the icon sits cleanly inside the stroke
+      .attr('r', r - 1)   
       .attr('cx', 0)
       .attr('cy', 0);
   }

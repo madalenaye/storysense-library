@@ -33,7 +33,6 @@ function edgePath(x1, y1, x2, y2, offsetIndex, curvature) {
   return `M${x1},${y1}Q${mx + nx * offset},${my + ny * offset} ${x2},${y2}`;
 }
 
-// Pull endpoints back from node surfaces so the arrowhead lands cleanly.
 function pullback(src, tgt, nrSrc, nrTgt) {
   const dx = tgt.x - src.x, dy = tgt.y - src.y;
   const dist = Math.sqrt(dx * dx + dy * dy);
@@ -59,7 +58,7 @@ export function edges(opts = {}) {
     nodeRadius  = 0,
     dedupe      = false,
     filter      = null,
-    global      = false,  // group by pair direction across ALL events (use with network())
+    global      = false,  
   } = opts;
 
   return {
@@ -128,9 +127,7 @@ export function edges(opts = {}) {
         });
       });
 
-      // Direction-aware offset assignment.
-      // When A→B and B→A both exist, each curves to its own side (their left normals
-      // point in opposite directions, so the arcs naturally bow apart from each other).
+
       lines.forEach(line => {
         const dk          = global ? `${line.fromId}|${line.toId}` : `${line.fromId}|${line.toId}|${line.ei}`;
         const ok          = global ? `${line.toId}|${line.fromId}` : `${line.toId}|${line.fromId}|${line.ei}`;
@@ -141,9 +138,9 @@ export function edges(opts = {}) {
         const total       = sameDir.length;
 
         if (total === 1 && !hasOpposing) {
-          line.offsetIndex = 0;                                   // single edge → straight
+          line.offsetIndex = 0;                                 
         } else if (total === 1 && hasOpposing) {
-          line.offsetIndex = 1;                                   // opposing pair → each curves away
+          line.offsetIndex = 1;                                   
         } else {
           const midpoint = (total - 1) / 2;
           line.offsetIndex = (hasOpposing ? 1 : 0) + (idx - midpoint);
@@ -165,7 +162,6 @@ export function edges(opts = {}) {
 
       if (arrow) edgeEls.attr('marker-end', 'url(#ss-edge-arrow)');
 
-      // Wide transparent hit targets for easier hover
       layer.append('g').selectAll('path')
         .data(lines)
         .join('path')

@@ -30,10 +30,10 @@ import { appendIcon, dicebearUrl } from '../icons.js';
 export function network(opts = {}) {
   const {
     r        = 18,
-    color    = null,   // null → use data.colorOf
+    color    = null,   
     icons    = true,
     iconStyle = 'notionists',
-    iconUrl  = null,   // fn(participant) → URL; overrides iconStyle
+    iconUrl  = null,   
     labels   = true,
     charge   = -300,
     linkDist = 100,
@@ -74,7 +74,6 @@ export function network(opts = {}) {
 
       ctx.set('charRadius', pid => nodeRadius.get(pid) ?? r);
 
-      // Circular initial positions for deterministic first frame
       const circleR = Math.min(width, height) * 0.32;
       const cx = width / 2, cy = height / 2;
 
@@ -261,7 +260,6 @@ export function network(opts = {}) {
         tickListeners.forEach(fn => fn());
       });
 
-      // Pre-settle for a stable first paint
       for (let i = 0; i < 300; i++) sim.tick();
       nodes.forEach(n => {
         n.x = Math.max(margin, Math.min(width  - margin, n.x));
