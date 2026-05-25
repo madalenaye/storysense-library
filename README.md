@@ -1,4 +1,4 @@
-# Storysense Library
+# StorySense Library
 
 Compose narrative visualizations from small, focused pieces. No framework or build step required.
 
