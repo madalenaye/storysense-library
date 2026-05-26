@@ -5,15 +5,32 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; }
     body  { font-family: system-ui, sans-serif; margin: 0; padding: 20px; background: #f3f4f6; }
-    h1    { font-size: 13px; font-weight: 700; color: #111827; margin: 0 0 20px; letter-spacing: .03em; }
+    h1    { font-size: 13px; font-weight: 700; color: #111827; margin: 0 0 6px; letter-spacing: .03em; }
+    .lede { font-size: 12px; color: #6b7280; margin: 0 0 20px; max-width: 720px; line-height: 1.55; }
+    .lede code { background: #e5e7eb; padding: 1px 6px; border-radius: 4px; font-size: 11px; color: #374151; }
     .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .card { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+    .card { background: #fff; border-radius: 10px; padding: 14px; box-shadow: 0 1px 4px rgba(0,0,0,.08); display: flex; flex-direction: column; }
     .card h2 { font-size: 10px; font-weight: 600; color: #9ca3af; margin: 0 0 8px; text-transform: uppercase; letter-spacing: .07em; }
+    .chart { width: 100%; }
+    .code  {
+      margin: 12px 0 0; padding: 12px 14px;
+      background: #1e1e2e; color: #cdd6f4;
+      border-radius: 8px;
+      font-family: ui-monospace, 'SF Mono', 'Fira Code', Consolas, monospace;
+      font-size: 11px; line-height: 1.65;
+      white-space: pre; overflow-x: auto;
+    }
     .err  { font-size: 11px; color: #ef4444; padding: 6px 0; }
   </style>
 </head>
 <body>
 <h1>All primitive combinations</h1>
+<p class="lede">
+  Each card shows a primitive stack rendered against
+  <code>little-red-riding-hood.json</code>, with the exact code used to build it.
+  Copy any snippet into your own project (after the usual <code>import SS from …</code> and
+  <code>const story = SS.normalizeNarrative(raw)</code> setup).
+</p>
 <div class="grid" id="grid"></div>
 
 <script type="module">
@@ -230,19 +247,36 @@ const cases = [
   },
 ];
 
+function codeFor(buildFn) {
+  const src = buildFn.toString()
+    .replace(/^el\s*=>\s*SS\.storysense\(el,/, "SS.storysense('#chart',");
+  const lines = src.split('\n');
+  const dedented = lines.map((l, i) => i === 0 ? l : l.replace(/^\s{6}/, '  '));
+  return dedented.join('\n').replace(/\s*$/, '') + ';';
+}
+
 const grid = document.getElementById('grid');
 
 cases.forEach(({ label, build }) => {
   const card = document.createElement('div');
   card.className = 'card';
   card.innerHTML = `<h2>${label}</h2>`;
-  const el = document.createElement('div');
-  card.appendChild(el);
+
+  const chart = document.createElement('div');
+  chart.className = 'chart';
+  card.appendChild(chart);
+
+  const code = document.createElement('pre');
+  code.className = 'code';
+  code.textContent = codeFor(build);
+  card.appendChild(code);
+
   grid.appendChild(card);
+
   try {
-    build(el);
+    build(chart);
   } catch (e) {
-    el.innerHTML = `<div class="err">Error: ${e.message}</div>`;
+    chart.innerHTML = `<div class="err">Error: ${e.message}</div>`;
     console.error(label, e);
   }
 });

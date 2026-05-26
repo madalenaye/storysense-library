@@ -14,17 +14,17 @@ SS.storysense('#chart', story)
 ## Contents
 
 1. [Install](#install)
-2. [Quick start](#quick-start)
-3. [Your data](#your-data)
-4. [Sizing the chart](#sizing-the-chart)
-5. [Chart options](#chart-options)
-6. [Primitives](#primitives)
+2. [Demos and examples](#demos-and-examples)
+3. [Quick start](#quick-start)
+4. [Your data](#your-data)
+5. [Sizing the chart](#sizing-the-chart)
+6. [Chart options](#chart-options)
+7. [Primitives](#primitives)
    - [Foundation](#foundation): `tooltip`, `timeline`
    - [On the timeline](#on-the-timeline): `events`, `characters`, `lifelines`, `edges`
    - [Standalone views](#standalone-views): `network`, `locations`, `movement`
-7. [Custom primitives](#custom-primitives)
-8. [Reference](#reference)
-9. [Local development](#local-development)
+8. [Custom primitives](#custom-primitives)
+9. [Reference](#reference)
 
 ## Install
 
@@ -48,6 +48,24 @@ Named imports also work:
 import { storysense, normalizeNarrative, tooltip, timeline }
   from 'https://cdn.jsdelivr.net/gh/madalenaye/storysense-library@main/src/index.js';
 ```
+
+## Demos and examples
+
+Two pages are bundled with the repo so you can see the library in action before wiring it into your own project:
+
+- **Primitives** at [`primitives/index.html`](primitives/index.html) — reference page. Each primitive (`timeline`, `events`, `characters`, `lifelines`, `edges`, `network`, `locations`, `movement`) rendered on its own, with the dependencies it needs and the keys it provides.
+- **Examples** at [`examples.html`](examples.html) — gallery of every meaningful primitive stack rendered side by side, each with the exact source snippet used to build it. Use it to pick a starting point and copy the code into your project.
+
+Both pages are static HTML, but they `fetch()` JSON and import ES modules, so **you need to run them from a local HTTP server** — opening the file directly with `file://` will not work. From inside the `storysense-lib/` folder:
+
+```bash
+python3 -m http.server 3000
+# or
+npx serve .
+```
+
+
+Sample stories live in [`stories/`](stories/) and the JSON schema is in [`narrative.schema.json`](narrative.schema.json).
 
 ## Quick start
 
@@ -457,19 +475,3 @@ render(ctx) {
 ### Layer order
 
 Drawn back to front: `background`, `paths`, `edges`, `nodes`, `pins`, `labels`, `overlay`.
-
-## Local development
-
-Serve the folder over HTTP. Any static server works:
-
-```bash
-python3 -m http.server 3000
-# or
-npx serve .
-```
-
-Then:
-
-- `http://localhost:3000/test.html` shows every primitive combination side by side.
-- Sample stories live in `stories/`.
-- The schema is in `narrative.schema.json`.
