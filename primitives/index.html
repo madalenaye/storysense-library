@@ -384,12 +384,12 @@ import {
   tooltip, timeline, events,
   characters, lifelines, edges,
   network, locations, movement,
-} from '../../src/index.js';
+} from '../src/index.js';
 
 const STORIES = [
-  { label: 'Little Red Riding Hood', file: new URL('../../stories/little-red-riding-hood.json', import.meta.url).href },
-  { label: 'Romeo & Juliet',         file: new URL('../../stories/romeo-and-juliet.json',        import.meta.url).href },
-  { label: 'The Ashford Affair',     file: new URL('../../stories/ashford-affair.json',          import.meta.url).href },
+  { label: 'Little Red Riding Hood', file: new URL('../stories/little-red-riding-hood.json', import.meta.url).href },
+  { label: 'Romeo & Juliet',         file: new URL('../stories/romeo-and-juliet.json',        import.meta.url).href },
+  { label: 'The Ashford Affair',     file: new URL('../stories/ashford-affair.json',          import.meta.url).href },
 ];
 
 let currentStory       = null;

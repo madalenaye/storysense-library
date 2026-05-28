@@ -34,9 +34,9 @@
 <div class="grid" id="grid"></div>
 
 <script type="module">
-import SS from '/src/index.js';
+import SS from './src/index.js';
 
-const raw   = await fetch('/stories/little-red-riding-hood.json').then(r => r.json());
+const raw   = await fetch('./stories/little-red-riding-hood.json').then(r => r.json());
 const story = SS.normalizeNarrative(raw);
 
 const LAND = 860 / 460;   // landscape  — horizontal timeline
