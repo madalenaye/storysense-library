@@ -16,7 +16,7 @@ import { normalizeNarrative }    from './data.js';
 import { dicebearUrl, initials } from './icons.js';
 import { timeline   } from './primitives/timeline.js';
 import { events     } from './primitives/events.js';
-import { characters } from './primitives/characters.js';
+import { participants } from './primitives/participants.js';
 import { lifelines  } from './primitives/lifelines.js';
 import { edges      } from './primitives/edges.js';
 import { locations  } from './primitives/locations.js';
@@ -29,7 +29,7 @@ export {
   dicebearUrl, initials,
   tooltip,
   timeline, events,
-  characters, lifelines, edges,
+  participants, lifelines, edges,
   network,
   locations, movement,
 };
@@ -93,7 +93,7 @@ export function storysense(container, data, opts = {}) {
 
     let resolvedAxisRatio = opts.axisRatio ?? null;
     if (resolvedAxisRatio == null) {
-      const charP = queue.find(p => p.id === 'characters' && p._layout === 'lane');
+      const charP = queue.find(p => p.id === 'participants' && p._layout === 'lane');
       if (charP) {
         const pSide     = charP._side       ?? 'above';
         const pSpacing  = charP._laneSpacing ?? 38;
@@ -185,7 +185,7 @@ export default {
   storysense,
   tooltip,
   timeline, events,
-  characters, lifelines, edges,
+  participants, lifelines, edges,
   network,
   locations, movement,
   dicebearUrl, initials,

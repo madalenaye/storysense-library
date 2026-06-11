@@ -6,7 +6,7 @@ A small JavaScript library for composing narrative visualizations from focused, 
 SS.storysense('#chart', story)
   .add(SS.tooltip())
   .add(SS.timeline())
-  .add(SS.characters())
+  .add(SS.participants())
   .add(SS.lifelines())
   .render();
 ```
@@ -21,7 +21,7 @@ SS.storysense('#chart', story)
 6. [Chart options](#chart-options)
 7. [Primitives](#primitives)
    - [Foundation](#foundation): `tooltip`, `timeline`
-   - [On the timeline](#on-the-timeline): `events`, `characters`, `lifelines`, `edges`
+   - [On the timeline](#on-the-timeline): `events`, `participants`, `lifelines`, `edges`
    - [Standalone views](#standalone-views): `network`, `locations`, `movement`
 8. [Custom primitives](#custom-primitives)
 9. [Reference](#reference)
@@ -55,14 +55,14 @@ import { storysense, normalizeNarrative, tooltip, timeline }
 
 Two pages are bundled with the repo so you can see the library in action before wiring it into your own project:
 
-- **Primitives** at [`primitives/index.html`](primitives/index.html) — reference page. Each primitive (`timeline`, `events`, `characters`, `lifelines`, `edges`, `network`, `locations`, `movement`) rendered on its own, with the dependencies it needs and the keys it provides.
+- **Primitives** at [`primitives/index.html`](primitives/index.html) — reference page. Each primitive (`timeline`, `events`, `participants`, `lifelines`, `edges`, `network`, `locations`, `movement`) rendered on its own, with the dependencies it needs and the keys it provides.
 - **Examples** at [`examples.html`](examples.html) — gallery of every meaningful primitive stack rendered side by side, each with the exact source snippet used to build it. Use it to pick a starting point and copy the code into your project.
 
 Sample stories live in [`stories/`](stories/) and the JSON schema is in [`narrative.schema.json`](narrative.schema.json).
 
 ## Quick start
 
-A minimal chart with a horizontal timeline, character lanes, and lifelines:
+A minimal chart with a horizontal timeline, participant lanes, and lifelines:
 
 ```js
 // 1. Load a story and normalize it. Always do this before rendering.
@@ -76,8 +76,8 @@ SS.storysense('#chart', story, { responsive: true, aspectRatio: 860/460 })
   //    you'll get a clear error if you add them out of order.
   .add(SS.tooltip())                                                          // hover popups
   .add(SS.timeline({ direction: 'x' }))                                       // time axis
-  .add(SS.characters({ layout: 'lane', side: 'above', r: 14, labels: true })) // one avatar per appearance
-  .add(SS.lifelines())                                                        // line through each character's nodes
+  .add(SS.participants({ layout: 'lane', side: 'above', r: 14, labels: true })) // one avatar per appearance
+  .add(SS.lifelines())                                                        // line through each participant's nodes
   .render();
 ```
 
@@ -192,7 +192,7 @@ For a fixed-size chart, pass `width` and `height` directly and omit both `respon
 | `width` | `null` | Fixed width in px (use together with `height`) |
 | `height` | `500` | Fixed height in px |
 | `padding` | `{top,right,bottom,left: 0}` | Inner whitespace in px |
-| `axisRatio` | auto | Fractional position of the time axis. `0` = top/left edge, `1` = bottom/right edge. Computed from participant count and `characters()` settings. Set manually only to override. |
+| `axisRatio` | auto | Fractional position of the time axis. `0` = top/left edge, `1` = bottom/right edge. Computed from participant count and `participants()` settings. Set manually only to override. |
 
 Call `api.destroy()` to clean up the `ResizeObserver` when removing the chart from the DOM.
 
@@ -206,7 +206,7 @@ A primitive is a small object that draws one type of mark. Each one declares wha
 tooltip()      provides: tooltip
 timeline()     provides: sceneX, sceneY, direction
   events()       needs: sceneX, sceneY
-  characters()   needs: sceneX, sceneY, direction  |  provides: charPos, charRadius
+  participants() needs: sceneX, sceneY, direction  |  provides: charPos, charRadius
     lifelines()    needs: charPos
     edges()        needs: charPos
 network()      provides: charPos, charRadius
@@ -227,7 +227,7 @@ Add this first. Every other primitive detects its presence and shows tooltips on
 
 #### `timeline(opts)`
 
-Draws the time axis with one tick per event. Foundation for `events()`, `characters()`, `lifelines()`, and `edges()`.
+Draws the time axis with one tick per event. Foundation for `events()`, `participants()`, `lifelines()`, and `edges()`.
 
 ```js
 .add(SS.timeline({ direction: 'x' }))
@@ -265,7 +265,7 @@ Places a marker at each event's position on the axis. Hover shows the event titl
 | `titles` | `false` | Show the event title next to each marker |
 | `onClick` | `null` | `fn(event, index)` called on click |
 
-#### `characters(opts)`
+#### `participants(opts)`
 
 Draws one avatar node per participant, per event they appear in.
 
@@ -275,7 +275,7 @@ Two layout modes:
 - **`force`**: participants cluster around each event position via a D3 force simulation. Nodes are draggable.
 
 ```js
-.add(SS.characters({ layout: 'lane', side: 'above', r: 14, labels: true }))
+.add(SS.participants({ layout: 'lane', side: 'above', r: 14, labels: true }))
 ```
 
 | Option | Default | What it does |
@@ -460,8 +460,8 @@ render(ctx) {
 | `sceneX` | `fn(eventIndex) -> px` | `timeline()` |
 | `sceneY` | `fn(eventIndex) -> px` | `timeline()` |
 | `direction` | `'x'` or `'y'` | `timeline()` |
-| `charPos` | `fn(participantId, eventIndex) -> {x, y}` | `characters()` or `network()` |
-| `charRadius` | `number` | `characters()` or `network()` |
+| `charPos` | `fn(participantId, eventIndex) -> {x, y}` | `participants()` or `network()` |
+| `charRadius` | `number` | `participants()` or `network()` |
 | `locPos` | `fn(locationId) -> {x, y}` | `locations()` |
 | `locDotPos` | `fn(eventIndex) -> {x, y}` | `locations()` |
 

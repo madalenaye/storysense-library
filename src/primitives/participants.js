@@ -1,5 +1,5 @@
 /**
- * Primitive: characters
+ * Primitive: participants
  *
  * Places one avatar node per participant per event they appear in,
  * relative to the timeline axis.
@@ -27,7 +27,7 @@
 import * as d3 from 'https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm';
 import { appendIcon, dicebearUrl } from '../icons.js';
 
-export function characters(opts = {}) {
+export function participants(opts = {}) {
   const {
     layout        = 'lane',
     r             = 16,
@@ -44,7 +44,7 @@ export function characters(opts = {}) {
   } = opts;
 
   return {
-    id:          'characters',
+    id:          'participants',
     _layout:     layout,
     _side:       side,
     _r:          r,

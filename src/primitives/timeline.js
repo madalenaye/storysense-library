@@ -6,7 +6,7 @@
  *
  * This primitive has exactly one job: establish the spatial coordinate system
  * and render the temporal axis. Event markers (dots, pins) belong in events().
- * Participant nodes belong in characters(). Keep them separate.
+ * Participant nodes belong in participants(). Keep them separate.
  *
  * Needs:    —
  * Provides: sceneX     fn(eventIndex) → x pixel

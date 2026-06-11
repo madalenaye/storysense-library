@@ -1,8 +1,8 @@
 /**
- * Icon helpers — shared by the characters and network primitives.
+ * Icon helpers — shared by the participants and network primitives.
  *
  * Default source: DiceBear Avatars (https://www.dicebear.com)
- * Override: pass an `iconUrl` function anywhere characters/network accept it.
+ * Override: pass an `iconUrl` function anywhere participants/network accept it.
  */
 
 /**
@@ -45,7 +45,7 @@ export function initials(participant) {
  * Append a circular avatar image to a D3 <g> already translated to node centre (0, 0).
  *
  * The clip path ID encodes both the participant id and the radius so that the
- * same participant can appear at different sizes (e.g. in network vs characters)
+ * same participant can appear at different sizes (e.g. in network vs participants)
  * without sharing a stale clip definition.
  *
  * @param {import('d3').Selection} g            Group element centred at (0, 0)

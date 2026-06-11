@@ -162,7 +162,7 @@
 <div class="tabs">
   <button class="tab active" data-view="storyline">Storyline</button>
   <button class="tab" data-view="interactions">Interactions</button>
-  <button class="tab" data-view="network">Character Network</button>
+  <button class="tab" data-view="network">Participant Network</button>
   <button class="tab" data-view="locations">Location Flow</button>
   <button class="tab" data-view="vertical">Vertical</button>
 </div>
@@ -174,7 +174,7 @@
 <script type="module">
 import {
   storysense, normalizeNarrative,
-  tooltip, timeline, events, characters, lifelines, edges, locations, movement, network,
+  tooltip, timeline, events, participants, lifelines, edges, locations, movement, network,
 } from '../src/index.js';
 
 
@@ -208,7 +208,7 @@ function render() {
         storysense('#chart', currentStory, { ...base, axisRatio: 0.72 })
           .add(tooltip())
           .add(timeline({ direction: 'x', stroke: '#e5e7eb', tickRadius: 3 }))
-          .add(characters({ layout: 'lane', side: 'above', r: 14, laneSpacing: 36, labels: true }))
+          .add(participants({ layout: 'lane', side: 'above', r: 14, laneSpacing: 36, labels: true }))
           .add(lifelines({ strokeWidth: 3, opacity: 0.75 }))
           .add(events({ shape: 'dot', r: 5, fill: '#e5e7eb' }))
           .render(),
@@ -217,7 +217,7 @@ function render() {
         storysense('#chart', currentStory, { ...base, axisRatio: 0.72 })
           .add(tooltip())
           .add(timeline({ direction: 'x', stroke: '#e5e7eb', tickRadius: 4 }))
-          .add(characters({ layout: 'force', side: 'above', r: 15, perpDistance: 120, axisStrength: 0.3 }))
+          .add(participants({ layout: 'force', side: 'above', r: 15, perpDistance: 120, axisStrength: 0.3 }))
           .add(edges({ strokeWidth: 2, opacity: 0.75, arrow: true, curvature: 28 }))
           .render(),
 
@@ -239,7 +239,7 @@ function render() {
         storysense('#chart', currentStory, { ...base, aspectRatio: 460 / 860, axisRatio: 0.28 })
           .add(tooltip())
           .add(timeline({ direction: 'y', stroke: '#e5e7eb', tickRadius: 3 }))
-          .add(characters({ layout: 'lane', side: 'below', r: 14, laneSpacing: 36, labels: true }))
+          .add(participants({ layout: 'lane', side: 'below', r: 14, laneSpacing: 36, labels: true }))
           .add(lifelines({ strokeWidth: 3, opacity: 0.75 }))
           .add(events({ shape: 'dot', r: 5, fill: '#e5e7eb' }))
           .render(),

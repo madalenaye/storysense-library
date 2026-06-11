@@ -220,19 +220,19 @@
 </div>
 
 
-<p class="section-title">Character Layout</p>
+<p class="section-title">Participant Layout</p>
 
 <div class="card-row">
 
   <div class="card">
     <div class="card-head">
       <div>
-        <div class="prim-badge">characters()</div>
+        <div class="prim-badge">participants()</div>
         <div class="prim-subtitle">layout: 'lane'</div>
       </div>
       <div class="prim-info">
         <div class="prim-desc">
-          Each character gets a fixed parallel track (lifeline lane).
+          Each participant gets a fixed parallel track (lifeline lane).
           Positions are static.
         </div>
         <div class="chips">
@@ -248,12 +248,12 @@
   <div class="card">
     <div class="card-head">
       <div>
-        <div class="prim-badge">characters()</div>
+        <div class="prim-badge">participants()</div>
         <div class="prim-subtitle">layout: 'force'</div>
       </div>
       <div class="prim-info">
         <div class="prim-desc">
-          Characters cluster per-scene using a D3 force simulation. Nodes are draggable.
+          Participants cluster per-scene using a D3 force simulation. Nodes are draggable.
           The simulation is pre-settled so the initial layout is stable.
         </div>
         <div class="chips">
@@ -275,13 +275,13 @@
     </div>
     <div class="prim-info">
       <div class="prim-desc">
-        Connects a character's appearances across scenes with a continuous line.
+        Connects a participant's appearances across scenes with a continuous line.
         In force mode the lines track node positions live on every simulation tick.
       </div>
       <div class="chips">
         <span class="chip chip-needs">needs: charPos</span>
         <span class="chip chip-gives">gives: nothing</span>
-        <span class="chip chip-dep">shown with: timeline · characters(lane)</span>
+        <span class="chip chip-dep">shown with: timeline · participants(lane)</span>
       </div>
     </div>
   </div>
@@ -295,14 +295,14 @@
     </div>
     <div class="prim-info">
       <div class="prim-desc">
-        Directed lines between characters for each interaction. Multiple interactions between
+        Directed lines between participants for each interaction. Multiple interactions between
         the same pair in the same scene are drawn as parallel offset lines.
         Arrowheads are optional. Hit area is wider than the visible line for easy hovering.
       </div>
       <div class="chips">
         <span class="chip chip-needs">needs: charPos</span>
         <span class="chip chip-gives">gives: nothing</span>
-        <span class="chip chip-dep">shown with: timeline · characters(force)</span>
+        <span class="chip chip-dep">shown with: timeline · participants(force)</span>
       </div>
     </div>
   </div>
@@ -318,7 +318,7 @@
     </div>
     <div class="prim-info">
       <div class="prim-desc">
-        One node per character in a free-form force-directed layout.
+        One node per participant in a free-form force-directed layout.
         Aggregates all interactions across all scenes. Fully draggable. Pair with
         <code>edges()</code> to draw relationship lines.
       </div>
@@ -382,7 +382,7 @@
 import {
   storysense, normalizeNarrative,
   tooltip, timeline, events,
-  characters, lifelines, edges,
+  participants, lifelines, edges,
   network, locations, movement,
 } from '../src/index.js';
 
@@ -441,26 +441,26 @@ function renderAll() {
   make('#c-char-lane', { aspectRatio: TALL, axisRatio: 0.72 },
     tooltip(),
     timeline({ direction: 'x', stroke: '#e5e7eb', tickRadius: 4 }),
-    characters({ layout: 'lane', side: 'above', r: 11, laneSpacing: 28, labels: true })
+    participants({ layout: 'lane', side: 'above', r: 11, laneSpacing: 28, labels: true })
   );
 
   make('#c-char-force', { aspectRatio: TALL, axisRatio: 0.72 },
     tooltip(),
     timeline({ direction: 'x', stroke: '#e5e7eb', tickRadius: 4 }),
-    characters({ layout: 'force', side: 'above', r: 11 })
+    participants({ layout: 'force', side: 'above', r: 11 })
   );
 
   make('#c-lifelines', { aspectRatio: TALL, axisRatio: 0.72 },
     tooltip(),
     timeline({ direction: 'x', stroke: '#e5e7eb', tickRadius: 4 }),
-    characters({ layout: 'lane', side: 'above', r: 11, laneSpacing: 28, labels: true }),
+    participants({ layout: 'lane', side: 'above', r: 11, laneSpacing: 28, labels: true }),
     lifelines({ strokeWidth: 2.5, opacity: 0.7 })
   );
 
   make('#c-edges', { aspectRatio: TALL, axisRatio: 0.72 },
     tooltip(),
     timeline({ direction: 'x', stroke: '#e5e7eb', tickRadius: 4 }),
-    characters({ layout: 'force', side: 'above', r: 11 }),
+    participants({ layout: 'force', side: 'above', r: 11 }),
     edges({ strokeWidth: 1.5, opacity: 0.7, arrow: true, curvature: 28})
   );
 
