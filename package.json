@@ -5,5 +5,12 @@
   "description": "Framework-agnostic narrative visualization library. Browser ESM — imports D3 from CDN.",
   "keywords": ["narrative", "visualization", "d3", "storytelling"],
   "main": "src/index.js",
+  "license": "MIT",
+  "author": "Madalena Ye",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/madalenaye/storysense-library.git"
+  },
+  "homepage": "https://madalenaye.github.io/storysense-library/",
   "dependencies": {}
 }

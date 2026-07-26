@@ -25,6 +25,7 @@ SS.storysense('#chart', story)
    - [Standalone views](#standalone-views): `network`, `locations`, `movement`
 8. [Custom primitives](#custom-primitives)
 9. [Reference](#reference)
+10. [License](#license)
 
 ## Install
 
@@ -468,3 +469,7 @@ render(ctx) {
 ### Layer order
 
 Drawn back to front: `background`, `paths`, `edges`, `nodes`, `pins`, `labels`, `overlay`.
+
+## License
+
+StorySense is released under the [MIT License](LICENSE). You are free to use, modify, and distribute it, including in commercial projects, as long as the copyright notice is kept.
